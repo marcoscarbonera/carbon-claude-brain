@@ -1,0 +1,84 @@
+name: Feature Request
+description: Sugira uma nova funcionalidade
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado pela sugestão! Descreva a funcionalidade que você gostaria de ver.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema que Resolve
+      description: Qual problema esta feature resolveria?
+      placeholder: Atualmente é difícil fazer X porque...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução Proposta
+      description: Como você imagina que essa feature funcionaria?
+      placeholder: Adicionar um comando que...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas Consideradas
+      description: Você pensou em outras formas de resolver isso?
+      placeholder: Poderia também...
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Componente Afetado
+      options:
+        - Hooks
+        - Skills
+        - Instalação
+        - Obsidian Integration
+        - Inkdrop Integration
+        - Documentação
+        - Outro
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Exemplos de Uso
+      description: Como essa feature seria usada no dia a dia?
+      placeholder: |
+        ```bash
+        ./install.sh --feature-nova
+        ```
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade (na sua visão)
+      options:
+        - Baixa - seria legal ter
+        - Média - melhoraria meu workflow
+        - Alta - bloqueador ou muito importante
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexto Adicional
+      description: Capturas de tela, links, referências, etc.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Pesquisei por issues similares
+          required: true
+        - label: Esta feature se alinha com o objetivo do projeto
+          required: true

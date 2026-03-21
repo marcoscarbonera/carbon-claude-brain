@@ -1,0 +1,27 @@
+# CODEOWNERS - Define quem deve revisar mudanças em cada parte do código
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ── Regra padrão ──────────────────────────────────────────────────────────────
+# Todos os arquivos precisam de review do mantenedor principal
+* @marcoscarbonera
+
+# ── Documentação ──────────────────────────────────────────────────────────────
+*.md @marcoscarbonera
+/docs/ @marcoscarbonera
+
+# ── Configurações críticas ────────────────────────────────────────────────────
+# Mudanças em segurança, instalação e configuração requerem review extra
+/install.sh @marcoscarbonera
+/.github/ @marcoscarbonera
+/SECURITY.md @marcoscarbonera
+/.gitignore @marcoscarbonera
+
+# ── Hooks ─────────────────────────────────────────────────────────────────────
+# Hooks executam código no sistema do usuário - revisão crítica
+/hooks/ @marcoscarbonera
+
+# ── Skills ────────────────────────────────────────────────────────────────────
+/skills/ @marcoscarbonera
+
+# ── Templates ─────────────────────────────────────────────────────────────────
+/templates/ @marcoscarbonera

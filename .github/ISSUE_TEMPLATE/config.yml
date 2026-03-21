@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Pergunta / Dúvida
+    url: https://github.com/marcoscarbonera/carbon-claude-brain/discussions
+    about: Faça perguntas sobre o projeto nas Discussions
+  - name: Vulnerabilidade de Segurança
+    url: https://github.com/marcoscarbonera/carbon-claude-brain/security/advisories/new
+    about: Reporte vulnerabilidades de forma privada via Security Advisories

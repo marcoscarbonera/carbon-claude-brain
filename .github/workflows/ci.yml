@@ -1,0 +1,166 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  shellcheck:
+    name: ShellCheck (validação de shell scripts)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rodar ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          severity: warning
+          scandir: './hooks'
+          ignore_paths: '.git'
+
+      - name: Rodar ShellCheck no install.sh
+        uses: ludeeus/action-shellcheck@master
+        with:
+          severity: warning
+          check_together: 'yes'
+          additional_files: 'install.sh'
+
+  security-check:
+    name: Verificação de Segurança
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verificar credenciais vazadas (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verificar padrões inseguros em shell scripts
+        run: |
+          echo "Verificando uso de eval..."
+          if grep -r "eval " hooks/ install.sh 2>/dev/null; then
+            echo "❌ ERRO: Uso de 'eval' detectado - risco de segurança"
+            exit 1
+          fi
+
+          echo "Verificando chmod 777..."
+          if grep -r "chmod 777" hooks/ install.sh 2>/dev/null; then
+            echo "❌ ERRO: chmod 777 detectado - permissões inseguras"
+            exit 1
+          fi
+
+          echo "✅ Nenhum padrão inseguro encontrado"
+
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint Markdown files
+        uses: articulate/actions-markdownlint@v1
+        with:
+          config: .markdownlint.json
+          files: '*.md docs/*.md'
+          ignore: 'node_modules'
+        continue-on-error: true
+
+  validate-structure:
+    name: Validar Estrutura do Projeto
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validar estrutura de diretórios
+        run: |
+          echo "Verificando estrutura obrigatória..."
+
+          required_dirs=(
+            "hooks"
+            "skills"
+            "templates"
+            "templates/obsidian"
+            "templates/inkdrop"
+            "docs"
+          )
+
+          for dir in "${required_dirs[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "❌ ERRO: Diretório obrigatório não encontrado: $dir"
+              exit 1
+            fi
+          done
+
+          required_files=(
+            "README.md"
+            "CONTRIBUTING.md"
+            "CODE_OF_CONDUCT.md"
+            "SECURITY.md"
+            "install.sh"
+            ".gitignore"
+          )
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ ERRO: Arquivo obrigatório não encontrado: $file"
+              exit 1
+            fi
+          done
+
+          echo "✅ Estrutura válida"
+
+      - name: Validar permissões de scripts
+        run: |
+          echo "Verificando permissões executáveis..."
+
+          if [ ! -x "install.sh" ]; then
+            echo "❌ ERRO: install.sh não é executável"
+            exit 1
+          fi
+
+          echo "✅ Permissões corretas"
+
+  test-install-dry-run:
+    name: Teste de Instalação (dry-run)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verificar sintaxe do install.sh
+        run: |
+          bash -n install.sh
+          echo "✅ Sintaxe do install.sh está correta"
+
+      - name: Verificar sintaxe dos hooks
+        run: |
+          for hook in hooks/*.sh; do
+            echo "Verificando $hook..."
+            bash -n "$hook"
+          done
+          echo "✅ Sintaxe dos hooks está correta"
+
+  all-checks-passed:
+    name: Todos os Checks Passaram
+    runs-on: ubuntu-latest
+    needs: [shellcheck, security-check, validate-structure, test-install-dry-run]
+
+    steps:
+      - name: Confirmação
+        run: echo "✅ Todos os checks de CI passaram com sucesso!"

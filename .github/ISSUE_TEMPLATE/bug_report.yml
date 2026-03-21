@@ -1,0 +1,115 @@
+name: Bug Report
+description: Reporte um bug ou problema
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar um bug! Por favor, preencha o máximo de informações possível.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição do Bug
+      description: Uma descrição clara e concisa do problema
+      placeholder: O que aconteceu?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para Reproduzir
+      description: Como reproduzir o problema?
+      placeholder: |
+        1. Execute './install.sh'
+        2. Configure com vault em '...'
+        3. Inicie Claude Code
+        4. Veja o erro
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento Esperado
+      description: O que você esperava que acontecesse?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento Atual
+      description: O que realmente aconteceu?
+    validations:
+      required: true
+
+  - type: input
+    id: claude-version
+    attributes:
+      label: Versão do Claude Code
+      description: Execute `claude --version`
+      placeholder: ex. 1.0.0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Sistema Operacional
+      options:
+        - macOS
+        - Linux
+        - Windows (WSL)
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: Versão do SO
+      placeholder: ex. macOS 14.0, Ubuntu 22.04
+    validations:
+      required: true
+
+  - type: input
+    id: obsidian-version
+    attributes:
+      label: Versão do Obsidian
+      placeholder: ex. 1.4.16
+
+  - type: input
+    id: inkdrop-version
+    attributes:
+      label: Versão do Inkdrop
+      placeholder: ex. 5.6.0
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs Relevantes
+      description: Cole aqui logs de erro (REMOVA INFORMAÇÕES SENSÍVEIS)
+      render: shell
+      placeholder: |
+        Error: Failed to connect to Inkdrop
+        at connect (hooks/session-start.sh:42)
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexto Adicional
+      description: Qualquer outra informação relevante
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Pesquisei por issues similares
+          required: true
+        - label: Testei com a versão mais recente
+          required: true
+        - label: Removi informações sensíveis dos logs
+          required: true
