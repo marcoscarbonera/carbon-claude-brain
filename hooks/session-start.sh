@@ -63,6 +63,27 @@ if [ $CURL_PREF_EXIT -eq 0 ] && [ -n "$PREFERENCES_RESPONSE" ] && echo "$PREFERE
   fi
 fi
 
+# ── Obsidian: conhecimento global (learnings, errors, patterns) ────────────
+
+LEARNINGS_FILE="$BRAIN_FOLDER/global/learnings.md"
+ERRORS_FILE="$BRAIN_FOLDER/global/errors-solved.md"
+PATTERNS_FILE="$BRAIN_FOLDER/global/patterns.md"
+
+if [ -f "$LEARNINGS_FILE" ]; then
+  OUTPUT+=$'\n\n## 📚 Aprendizados Gerais (Obsidian)\n\n'
+  OUTPUT+="$(cat "$LEARNINGS_FILE")"
+fi
+
+if [ -f "$ERRORS_FILE" ]; then
+  OUTPUT+=$'\n\n## 🐛 Erros Resolvidos (Obsidian)\n\n'
+  OUTPUT+="$(cat "$ERRORS_FILE")"
+fi
+
+if [ -f "$PATTERNS_FILE" ]; then
+  OUTPUT+=$'\n\n## 🎯 Padrões Reutilizáveis (Obsidian)\n\n'
+  OUTPUT+="$(cat "$PATTERNS_FILE")"
+fi
+
 # ── Obsidian: contexto do projeto ──────────────────────────────────────────
 
 CONTEXT_FILE="$BRAIN_FOLDER/projects/$PROJECT_NAME/project-context.md"

@@ -28,32 +28,159 @@ API HTTP local na porta 19840. Use para:
 - Notas rápidas e observações
 - Histórico acessível em qualquer máquina
 
-**Credenciais:** leia de `~/.carbon-brain/config`
+**Credenciais:** leia de `~/.carbon-brain/.env` (ou `config` para retrocompatibilidade)
+
+## Arquivos de Conhecimento Global
+
+### Estrutura
+```
+_claude-brain/global/
+├── journals/           # Sessões diárias (automático via /brain-save)
+├── learnings.md        # Aprendizados reutilizáveis
+├── errors-solved.md    # Erros resolvidos (lições aprendidas)
+└── patterns.md         # Padrões de código/arquitetura
+```
+
+### Quando usar cada arquivo
+
+**journals/** - Use automaticamente via `/brain-save`
+- O que foi feito na sessão
+- Contexto temporal (hoje, essa semana)
+
+**learnings.md** - Use quando descobrir **conhecimento reutilizável**
+- Regras gerais que valem para qualquer projeto
+- "Sempre validar inputs antes de processar"
+- "Usar timeout de 5s em requests externos"
+
+**errors-solved.md** - Use quando **resolver um erro não óbvio**
+- Erro que demorou para resolver
+- Erro que pode acontecer de novo
+- Lição importante para não repetir
+
+**patterns.md** - Use para **padrões de código**
+- Snippets reutilizáveis
+- Estruturas que funcionam bem
+- Arquiteturas comprovadas
 
 ## Comandos disponíveis
 
 ### /brain-save
-Salva o resumo da sessão atual. Execute ao encerrar:
+Salva o resumo da sessão atual em AMBOS Obsidian e Inkdrop.
 
-1. **Obsidian** — Atualize `_claude-brain/projects/$PROJECT/decision-log.md` com decisões tomadas
-2. **Inkdrop** — Crie uma nota de journal com:
-   - Título: `Journal $PROJECT — YYYY-MM-DD`
-   - Tag: `claude-journal`
-   - Corpo: resumo do que foi feito, erros encontrados, próximos passos
+**Obsidian (SEMPRE):**
+- Salva em `_claude-brain/global/journals/YYYY-MM-DD.md`
+- Formato: markdown com frontmatter YAML
+- Uma nota por dia - múltiplas sessões = append com separador
 
+**Inkdrop (SE CONFIGURADO):**
+- Se `INKDROP_URL` estiver vazio → pula Inkdrop
+- Se configurado → salva com tag `claude-journal`
+- Uma nota por dia - múltiplas sessões = append com separador
+- Se servidor offline → warning, continua apenas com Obsidian
+
+**Exemplo de uso:**
 ```bash
-# Ler config
-source ~/.carbon-brain/config
+#!/usr/bin/env bash
+# Carregar biblioteca
+source ~/.claude/hooks/lib-carbon-brain.sh
 
-# Criar nota no Inkdrop
-curl -s -u "$INKDROP_USER:$INKDROP_PASS" \
-  -X POST "$INKDROP_URL/notes" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Journal PROJETO — DATA",
-    "body": "## O que foi feito\n...\n\n## Aprendizados\n...\n\n## Próximos passos\n...",
-    "tags": ["claude-journal"]
-  }'
+# Carregar configuração (.env ou config antigo)
+load_config
+
+# Obter variáveis
+PROJECT="$(basename "$(pwd)")"
+DATE="$(date '+%Y-%m-%d')"
+START_TIME="14:30"  # Pegar do trigger file
+END_TIME="$(date '+%H:%M')"
+
+# Preparar conteúdo
+CONTENT="### O que foi feito
+- Implementei feature X
+- Corrigi bug Y
+
+### Erros e aprendizados
+- Erro: timeout na API
+  Solução: aumentei timeout para 5s
+
+### Próximos passos
+- [ ] Adicionar testes
+- [ ] Deploy em staging"
+
+# 1. Salvar no Obsidian (SEMPRE)
+if save_to_obsidian_journal "$PROJECT" "$DATE" "$START_TIME" "$END_TIME" "$CONTENT"; then
+  echo "✅ Salvo no Obsidian: _claude-brain/global/journals/$DATE.md"
+else
+  echo "❌ Erro ao salvar no Obsidian"
+  exit 1
+fi
+
+# 2. Salvar no Inkdrop (SE HABILITADO)
+if is_inkdrop_enabled; then
+  if save_to_inkdrop_journal "$PROJECT" "$DATE" "$START_TIME" "$END_TIME" "$CONTENT"; then
+    echo "✅ Salvo no Inkdrop: Journal $PROJECT — $DATE"
+  else
+    echo "⚠️  Inkdrop indisponível (salvo apenas no Obsidian)"
+  fi
+else
+  echo "ℹ️  Inkdrop desabilitado (salvo apenas no Obsidian)"
+fi
+```
+
+### /brain-learn
+Salva um aprendizado reutilizável em `global/learnings.md`.
+
+**Use quando:**
+- Descobrir uma regra geral que vale para qualquer projeto
+- Aprender algo que quer lembrar em projetos futuros
+- Identificar uma melhor prática
+
+**Exemplo:**
+```bash
+source ~/.claude/hooks/lib-carbon-brain.sh
+load_config
+
+# Salvar aprendizado na categoria certa
+if save_learning "Performance" "Sempre adicionar índice em colunas usadas em WHERE/JOIN"; then
+  echo "✅ Aprendizado salvo em global/learnings.md"
+else
+  echo "❌ Erro ao salvar aprendizado"
+fi
+```
+
+**Categorias disponíveis:**
+- Desenvolvimento
+- Arquitetura
+- Performance
+- Segurança
+- Testing
+- DevOps
+
+### /brain-error
+Registra um erro resolvido em `global/errors-solved.md`.
+
+**Use quando:**
+- Resolver um erro que demorou para descobrir
+- Encontrar uma solução não óbvia
+- Quiser evitar repetir o mesmo erro
+
+**Exemplo:**
+```bash
+source ~/.claude/hooks/lib-carbon-brain.sh
+load_config
+
+DATE="$(date '+%Y-%m-%d')"
+
+if save_error_solved \
+  "$DATE" \
+  "NullPointerException ao acessar user.profile" \
+  "Fazendo update de perfil do usuário" \
+  "Cannot read property 'name' of null" \
+  "Adicionar verificação: if (user.profile) antes de acessar" \
+  "Sempre validar que objetos nested existem antes de acessar propriedades"; then
+  echo "✅ Erro documentado em global/errors-solved.md"
+else
+  echo "❌ Erro ao documentar"
+fi
 ```
 
 ### /brain-context
@@ -397,9 +524,17 @@ $OBSIDIAN_VAULT/
 
 - **Sempre** leia o contexto do Obsidian antes de começar uma tarefa complexa
 - **Sempre** salve decisões importantes no decision-log.md imediatamente
-- **Ao encerrar** a sessão, crie o journal no Inkdrop sem esperar ser solicitado
+- **Ao encerrar** a sessão, execute `/brain-save` para salvar journal (Obsidian + Inkdrop)
+- **Quando descobrir aprendizado reutilizável**, use `/brain-learn` para salvar em learnings.md
+- **Quando resolver erro não óbvio**, use `/brain-error` para documentar em errors-solved.md
 - Use **tags consistentes** no Inkdrop: `claude-journal`, `claude-decision`, `claude-error`
 - Notas do Inkdrop devem ter o nome do projeto no título para facilitar busca
+
+### Diferença entre arquivos:
+- **journals/** = O que fiz hoje (temporal)
+- **learnings.md** = Conhecimento reutilizável (atemporal)
+- **errors-solved.md** = Erros resolvidos (lições aprendidas)
+- **decision-log.md** = Decisões específicas do projeto
 
 ## ⚡ Economia de Tokens - IMPORTANTE
 

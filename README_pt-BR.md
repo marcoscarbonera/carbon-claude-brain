@@ -15,6 +15,7 @@ flowchart TB
     Hook1 --> Ink1[📓 Carregar do Inkdrop]
 
     Obs1 --> |Contexto do Projeto|Load[Contexto Carregado]
+    Obs1 --> |Conhecimento Global|Load
     Ink1 --> |Preferências Pessoais|Load
     Ink1 --> |Aprendizados Anteriores|Load
 
@@ -68,9 +69,21 @@ graph LR
 ```
 
 **Regra de Negócio:**
-1. **Início da Sessão** — Claude carrega automaticamente o contexto do Obsidian (este projeto) e Inkdrop (suas preferências)
+1. **Início da Sessão** — Claude carrega automaticamente:
+   - Conhecimento global (aprendizados, erros resolvidos, padrões)
+   - Contexto do projeto e decisões recentes
+   - Preferências pessoais do Inkdrop
 2. **Trabalho** — Claude programa no seu projeto com contexto completo
 3. **Fim da Sessão** — Claude salva automaticamente decisões no Obsidian e aprendizados no Inkdrop
+
+**O que é carregado em cada sessão:**
+- ⚙️ Preferências pessoais (Inkdrop)
+- 📚 Aprendizados globais (conhecimento cross-project)
+- 🐛 Erros previamente resolvidos
+- 🎯 Padrões de código reutilizáveis
+- 📁 Contexto do projeto atual
+- 🏛️ Decisões técnicas recentes
+- 📔 Journal da última sessão
 
 ## Pré-requisitos
 
@@ -122,6 +135,34 @@ As credenciais do Inkdrop são armazenadas em `~/.carbon-brain/.env` (formato pa
 - Aprendizados gerais e padrões
 - Erros resolvidos
 
+## 🤖 Auto-Save (NOVO!)
+
+Resumos de sessão agora são **salvos automaticamente** quando você fecha o Claude Code.
+
+- **O que:** Resumo inteligente gerado analisando o transcript da sessão
+- **Quando:** Automaticamente ao encerrar sessão (Ctrl+C, exit)
+- **Onde:** Journals do Obsidian + Inkdrop (se habilitado)
+- **Modelo:** Usa Claude Haiku (rápido, leve)
+- **Tempo:** Adiciona ~5-10s ao fechamento da sessão
+
+**Formato salvo:**
+```markdown
+### O que foi feito
+- Feature X implementada
+- Bug Y corrigido
+
+### Erros e aprendizados
+- Problema: timeout na API → Solução: aumentei para 5s
+
+### Próximos passos
+- [ ] Adicionar testes
+- [ ] Deploy em staging
+```
+
+**[→ Documentação do Auto-Save](docs/auto-save.md)**
+
+Você ainda pode usar `/brain-save` manualmente para ter mais controle.
+
 ## Skills Disponíveis
 
 | Skill | Propósito |
@@ -129,7 +170,7 @@ As credenciais do Inkdrop são armazenadas em `~/.carbon-brain/.env` (formato pa
 | `/brain-test` | Verificar instalação |
 | `/brain-context` | Ver contexto carregado |
 | `/brain-plan` | Criar/atualizar plano do projeto |
-| `/brain-save` | Salvar resumo da sessão |
+| `/brain-save` | Salvar resumo da sessão (opcional - agora auto-salva) |
 | `/brain-search` | Buscar em todos os projetos |
 | `/brain-search-patterns` | Buscar conhecimento pessoal |
 
@@ -139,13 +180,16 @@ As credenciais do Inkdrop são armazenadas em `~/.carbon-brain/.env` (formato pa
 
 ## Uso de Tokens
 
-Injeção de contexto custa ~1500-3000 tokens por sessão.
+**Injeção de contexto:** ~1500-3000 tokens por sessão
+**Auto-save:** ~2000-10000 tokens por sessão (usa agent interno do Claude Code)
 
-| Tipo de Sessão | Vale a Pena? |
-|----------------|--------------|
-| Rápida (1-3 msgs) | ❌ Não recomendado |
-| Média (5-10 msgs) | ⚖️ Empate |
-| Longa (15+ msgs) | ✅ Economiza tokens no geral |
+| Tipo de Sessão | Tokens Contexto | Tokens Auto-Save | Total | Vale a Pena? |
+|----------------|-----------------|------------------|-------|--------------|
+| Rápida (1-3 msgs) | 1500 tokens | ~2000 tokens | ~3500 | ⚖️ Marginal |
+| Média (5-10 msgs) | 2000 tokens | ~5000 tokens | ~7000 | ✅ Sim |
+| Longa (15+ msgs) | 3000 tokens | ~8000 tokens | ~11000 | ✅ Definitivamente |
+
+**Nota:** Auto-save usa sua cota/sessão do Claude Code - sem custos adicionais de API.
 
 **Desabilitar temporariamente:**
 ```bash
@@ -165,6 +209,7 @@ CARBON_BRAIN_SKIP=1 claude
 - [Melhores Práticas de Segurança](docs/security-best-practices.md)
 
 ### 🎯 Guias de Uso
+- [Auto-Save Feature](docs/auto-save.md) - Resumos automáticos de sessão
 - [Referência de Skills](docs/skills-guide.md)
 - [Cartão de Referência Rápida](docs/quick-reference.md)
 - [Otimização de Tokens](docs/token-optimization.md)
