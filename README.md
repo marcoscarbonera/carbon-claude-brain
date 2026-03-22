@@ -36,11 +36,11 @@ flowchart TB
     Hook3 --> SaveObs2[💾 Update Obsidian Status]
     Hook3 --> SaveInk[📓 Save Journal to Inkdrop]
 
-    style Start fill:#a8e6cf
-    style End fill:#ff8b94
-    style Work fill:#ffd3b6
-    style Load fill:#dcedc1
-    style Skills fill:#ffaaa5
+    style Start fill:#fff,stroke:#000,stroke-width:3px
+    style End fill:#fff,stroke:#000,stroke-width:3px
+    style Work fill:#fff,stroke:#000,stroke-width:2px
+    style Load fill:#fff,stroke:#000,stroke-width:2px
+    style Skills fill:#fff,stroke:#000,stroke-width:2px
 ```
 
 ### Architecture Overview
@@ -61,10 +61,10 @@ graph LR
     Claude -->|saves at end| Obsidian
     Claude -->|saves at end| Inkdrop
 
-    style Claude fill:#a8e6cf,stroke:#6b8e7d,stroke-width:3px
-    style Project fill:#ffaaa5,stroke:#c97676,stroke-width:2px
-    style Obsidian fill:#ffd3b6,stroke:#d4a574,stroke-width:2px
-    style Inkdrop fill:#dcedc1,stroke:#6b8e7d,stroke-width:2px
+    style Claude fill:#fff,stroke:#000,stroke-width:3px
+    style Project fill:#fff,stroke:#000,stroke-width:2px
+    style Obsidian fill:#fff,stroke:#000,stroke-width:2px
+    style Inkdrop fill:#fff,stroke:#000,stroke-width:2px
 ```
 
 **Business Logic:**
