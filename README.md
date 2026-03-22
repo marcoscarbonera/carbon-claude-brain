@@ -46,70 +46,31 @@ flowchart TB
 ### Architecture Overview
 
 ```mermaid
-graph TB
-    subgraph "Claude Code"
-        CC[Claude Session]
-        Hooks[Hooks System]
-        Skills[Skills System]
-    end
+graph LR
+    Claude[🤖 Claude Code]
+    Project[📁 Your Project]
 
-    subgraph "Local Storage - Obsidian"
-        OVault[📂 Obsidian Vault]
-        OBrain[_claude-brain/]
-        OProject[project-name.md]
-        OPlan[plan.md]
-        ODocs[docs/]
+    Obsidian[📖 Obsidian<br/>Project Knowledge<br/><small>plans, decisions, architecture</small>]
+    Inkdrop[📓 Inkdrop<br/>Personal Memory<br/><small>preferences, learnings, patterns</small>]
 
-        OVault --> OBrain
-        OBrain --> OProject
-        OBrain --> OPlan
-        OBrain --> ODocs
-    end
+    Claude -->|works on| Project
 
-    subgraph "Synced Storage - Inkdrop"
-        IServer[🌐 Local Server :19840]
-        IPrefs[#claude-preferencia]
-        IJournal[#claude-journal]
-        ILearnings[#claude-aprendizado]
-        IPatterns[#claude-pattern]
-        IErrors[#claude-erro-resolvido]
+    Claude -->|reads at start| Obsidian
+    Claude -->|reads at start| Inkdrop
 
-        IServer --> IPrefs
-        IServer --> IJournal
-        IServer --> ILearnings
-        IServer --> IPatterns
-        IServer --> IErrors
-    end
+    Claude -->|saves at end| Obsidian
+    Claude -->|saves at end| Inkdrop
 
-    subgraph "Project Files"
-        Proj[📁 Your Project]
-        Code[Source Code]
-
-        Proj --> Code
-    end
-
-    CC -->|Reads Context| Hooks
-    Hooks -->|session-start| OBrain
-    Hooks -->|session-start| IServer
-    Hooks -->|post-tool-use| OBrain
-    Hooks -->|session-end| OBrain
-    Hooks -->|session-end| IServer
-
-    CC -->|Commands| Skills
-    Skills -->|/brain-plan| OBrain
-    Skills -->|/brain-search| OBrain
-    Skills -->|/brain-search-patterns| IServer
-    Skills -->|/brain-context| OBrain
-
-    CC -->|Works on| Proj
-
-    style CC fill:#a8e6cf
-    style OVault fill:#ffd3b6
-    style IServer fill:#dcedc1
-    style Proj fill:#ffaaa5
-    style Hooks fill:#98d8c8
-    style Skills fill:#f7dc6f
+    style Claude fill:#a8e6cf,stroke:#6b8e7d,stroke-width:3px
+    style Project fill:#ffaaa5,stroke:#c97676,stroke-width:2px
+    style Obsidian fill:#ffd3b6,stroke:#d4a574,stroke-width:2px
+    style Inkdrop fill:#dcedc1,stroke:#6b8e7d,stroke-width:2px
 ```
+
+**Business Logic:**
+1. **Session Start** — Claude automatically loads context from Obsidian (this project) and Inkdrop (your preferences)
+2. **Work** — Claude codes on your project with full context
+3. **Session End** — Claude automatically saves decisions to Obsidian and learnings to Inkdrop
 
 ## Prerequisites
 

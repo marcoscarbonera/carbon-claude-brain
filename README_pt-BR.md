@@ -46,70 +46,31 @@ flowchart TB
 ### Visão Geral da Arquitetura
 
 ```mermaid
-graph TB
-    subgraph "Claude Code"
-        CC[Sessão Claude]
-        Hooks[Sistema de Hooks]
-        Skills[Sistema de Skills]
-    end
+graph LR
+    Claude[🤖 Claude Code]
+    Projeto[📁 Seu Projeto]
 
-    subgraph "Armazenamento Local - Obsidian"
-        OVault[📂 Vault Obsidian]
-        OBrain[_claude-brain/]
-        OProject[nome-projeto.md]
-        OPlan[plano.md]
-        ODocs[docs/]
+    Obsidian[📖 Obsidian<br/>Conhecimento do Projeto<br/><small>planos, decisões, arquitetura</small>]
+    Inkdrop[📓 Inkdrop<br/>Memória Pessoal<br/><small>preferências, aprendizados, padrões</small>]
 
-        OVault --> OBrain
-        OBrain --> OProject
-        OBrain --> OPlan
-        OBrain --> ODocs
-    end
+    Claude -->|trabalha em| Projeto
 
-    subgraph "Armazenamento Sincronizado - Inkdrop"
-        IServer[🌐 Servidor Local :19840]
-        IPrefs[#claude-preferencia]
-        IJournal[#claude-journal]
-        ILearnings[#claude-aprendizado]
-        IPatterns[#claude-pattern]
-        IErrors[#claude-erro-resolvido]
+    Claude -->|lê ao iniciar| Obsidian
+    Claude -->|lê ao iniciar| Inkdrop
 
-        IServer --> IPrefs
-        IServer --> IJournal
-        IServer --> ILearnings
-        IServer --> IPatterns
-        IServer --> IErrors
-    end
+    Claude -->|salva ao encerrar| Obsidian
+    Claude -->|salva ao encerrar| Inkdrop
 
-    subgraph "Arquivos do Projeto"
-        Proj[📁 Seu Projeto]
-        Code[Código Fonte]
-
-        Proj --> Code
-    end
-
-    CC -->|Lê Contexto| Hooks
-    Hooks -->|session-start| OBrain
-    Hooks -->|session-start| IServer
-    Hooks -->|post-tool-use| OBrain
-    Hooks -->|session-end| OBrain
-    Hooks -->|session-end| IServer
-
-    CC -->|Comandos| Skills
-    Skills -->|/brain-plan| OBrain
-    Skills -->|/brain-search| OBrain
-    Skills -->|/brain-search-patterns| IServer
-    Skills -->|/brain-context| OBrain
-
-    CC -->|Trabalha em| Proj
-
-    style CC fill:#a8e6cf
-    style OVault fill:#ffd3b6
-    style IServer fill:#dcedc1
-    style Proj fill:#ffaaa5
-    style Hooks fill:#98d8c8
-    style Skills fill:#f7dc6f
+    style Claude fill:#a8e6cf,stroke:#6b8e7d,stroke-width:3px
+    style Projeto fill:#ffaaa5,stroke:#c97676,stroke-width:2px
+    style Obsidian fill:#ffd3b6,stroke:#d4a574,stroke-width:2px
+    style Inkdrop fill:#dcedc1,stroke:#6b8e7d,stroke-width:2px
 ```
+
+**Regra de Negócio:**
+1. **Início da Sessão** — Claude carrega automaticamente o contexto do Obsidian (este projeto) e Inkdrop (suas preferências)
+2. **Trabalho** — Claude programa no seu projeto com contexto completo
+3. **Fim da Sessão** — Claude salva automaticamente decisões no Obsidian e aprendizados no Inkdrop
 
 ## Pré-requisitos
 
