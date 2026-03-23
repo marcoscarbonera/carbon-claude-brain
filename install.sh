@@ -86,6 +86,14 @@ mkdir -p "$HOOKS_DIR"
 mkdir -p "$SKILLS_DIR/brain"
 mkdir -p "$SKILLS_DIR/obsidian"
 mkdir -p "$SKILLS_DIR/inkdrop"
+mkdir -p "$SKILLS_DIR/brain-test"
+mkdir -p "$SKILLS_DIR/brain-save"
+mkdir -p "$SKILLS_DIR/brain-search"
+mkdir -p "$SKILLS_DIR/brain-context"
+mkdir -p "$SKILLS_DIR/brain-plan"
+mkdir -p "$SKILLS_DIR/brain-learn"
+mkdir -p "$SKILLS_DIR/brain-error"
+mkdir -p "$SKILLS_DIR/brain-search-patterns"
 
 # ── Salvar configuração ────────────────────────────────────────────────────
 
@@ -144,7 +152,17 @@ cp "$REPO_DIR/skills/brain/SKILL.md"    "$SKILLS_DIR/brain/SKILL.md"
 cp "$REPO_DIR/skills/obsidian/SKILL.md" "$SKILLS_DIR/obsidian/SKILL.md"
 cp "$REPO_DIR/skills/inkdrop/SKILL.md"  "$SKILLS_DIR/inkdrop/SKILL.md"
 
-echo "✅ Skills instaladas em ~/.claude/skills/"
+# Copiar sub-skills individuais
+cp "$REPO_DIR/skills/brain-test/SKILL.md"           "$SKILLS_DIR/brain-test/SKILL.md"
+cp "$REPO_DIR/skills/brain-save/SKILL.md"           "$SKILLS_DIR/brain-save/SKILL.md"
+cp "$REPO_DIR/skills/brain-search/SKILL.md"         "$SKILLS_DIR/brain-search/SKILL.md"
+cp "$REPO_DIR/skills/brain-context/SKILL.md"        "$SKILLS_DIR/brain-context/SKILL.md"
+cp "$REPO_DIR/skills/brain-plan/SKILL.md"           "$SKILLS_DIR/brain-plan/SKILL.md"
+cp "$REPO_DIR/skills/brain-learn/SKILL.md"          "$SKILLS_DIR/brain-learn/SKILL.md"
+cp "$REPO_DIR/skills/brain-error/SKILL.md"          "$SKILLS_DIR/brain-error/SKILL.md"
+cp "$REPO_DIR/skills/brain-search-patterns/SKILL.md" "$SKILLS_DIR/brain-search-patterns/SKILL.md"
+
+echo "✅ Skills instaladas em ~/.claude/skills/ (11 skills total)"
 
 # ── Registrar hooks no settings.json ──────────────────────────────────────
 

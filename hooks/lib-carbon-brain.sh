@@ -11,11 +11,13 @@ load_config() {
   if [ -f "$ENV_FILE" ]; then
     # Carregar .env (exportar variáveis)
     set -a
+    # shellcheck source=/dev/null
     source "$ENV_FILE"
     set +a
     return 0
   # Fallback para config antigo
   elif [ -f "$OLD_CONFIG" ]; then
+    # shellcheck source=/dev/null
     source "$OLD_CONFIG"
     return 0
   else

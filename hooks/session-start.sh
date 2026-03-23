@@ -102,9 +102,6 @@ fi
 
 # ── Inkdrop: journal da última sessão ─────────────────────────────────────
 
-YESTERDAY=$(date -v-1d '+%Y-%m-%d' 2>/dev/null || date -d 'yesterday' '+%Y-%m-%d' 2>/dev/null)
-TODAY=$(date '+%Y-%m-%d')
-
 # Tentar buscar do Inkdrop com timeout e tratamento de erro
 INKDROP_RESPONSE=$(curl -s --max-time 5 \
   -u "$INKDROP_USER:$INKDROP_PASS" \
