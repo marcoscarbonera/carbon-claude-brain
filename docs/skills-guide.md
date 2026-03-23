@@ -340,7 +340,7 @@ _claude-brain/
 **Solution:**
 1. Verify Obsidian vault path: `cat ~/.carbon-brain/config`
 2. Check if `_claude-brain/` folder exists in vault
-3. For Inkdrop skills, test API: `curl -u "user:pass" http://localhost:19840/notes`
+3. For Inkdrop skills, test API: `curl -u "$INKDROP_USER:$INKDROP_PASS" http://localhost:19840/notes`
 4. Create some test notes with the appropriate tags
 
 ### Skill is slow

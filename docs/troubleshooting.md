@@ -153,7 +153,7 @@ sudo yum install curl
 
 **Verificar:**
 ```bash
-curl -u "usuario:senha" http://localhost:19840/notes
+curl -u "$INKDROP_USER:$INKDROP_PASS" http://localhost:19840/notes
 ```
 
 Se der erro de conexão, o servidor não está ativo.

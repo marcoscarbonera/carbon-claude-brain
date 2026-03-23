@@ -23,7 +23,12 @@ O Inkdrop já vem com servidor HTTP local embutido. Para ativá-lo:
 ## Testar a API
 
 ```bash
-curl -u SEU_USUARIO:SUA_SENHA http://localhost:19840/notes?limit=1
+# Configure suas credenciais
+export INKDROP_USER="seu_usuario"
+export INKDROP_PASS="sua_senha"
+
+# Teste a API
+curl -u "$INKDROP_USER:$INKDROP_PASS" http://localhost:19840/notes?limit=1
 ```
 
 Se retornar JSON, está funcionando.
@@ -33,8 +38,32 @@ Se retornar JSON, está funcionando.
 Durante o `install.sh`, informe:
 - URL: `http://localhost:19840`
 - Usuário e senha configurados no plugin
+- **Notebook ID** (opcional): ID do notebook onde criar as notas
 
-As credenciais ficam salvas em `~/.carbon-brain/config` (permissão 600).
+As credenciais ficam salvas em `~/.carbon-brain/.env` (permissão 600).
+
+### Configurar Notebook de Destino (Opcional)
+
+Por padrão, as notas são criadas na inbox do Inkdrop. Para organizá-las em um notebook específico:
+
+1. **Criar notebook no Inkdrop** (ex: "Claude Brain")
+2. **Descobrir o ID do notebook:**
+   ```bash
+   claude
+   /brain-inkdrop-setup
+   ```
+3. **Copiar o ID** (formato: `book:abc123def456`)
+4. **Adicionar ao `.env`:**
+   ```bash
+   nano ~/.carbon-brain/.env
+   ```
+   Adicione a linha:
+   ```
+   INKDROP_NOTEBOOK_ID="book:abc123def456"
+   ```
+5. **Reiniciar Claude Code** - próximas notas serão criadas nesse notebook
+
+**Nota:** O notebook pode ser um sub-notebook (ex: `Personal > Claude Brain`). Basta usar o ID dele.
 
 ## Por que o Inkdrop?
 
@@ -43,19 +72,61 @@ As credenciais ficam salvas em `~/.carbon-brain/config` (permissão 600).
 - **Interface amigável** — você consegue ler/editar as notas normalmente
 - **Multiplataforma** — macOS, Linux, Windows, iOS, Android
 
-## Notebooks e Tags Sugeridos
+## Organização: Notebooks vs Tags
 
-### Criar Notebook
-Crie um notebook chamado `claude-brain` no Inkdrop para organizar as notas geradas:
-1. No Inkdrop, clique em **+ Add Notebook**
-2. Nome: `claude-brain`
-3. Este notebook será usado para armazenar journals de sessões
+O carbon-claude-brain suporta **duas formas** de organizar as notas:
 
-### Criar Tags
-Crie as seguintes tags para organizar melhor:
-- `#claude-preferencia` - Para suas preferências pessoais de código
-- `#claude-journal` - Para journals de sessões
-- `#claude-learning` - Para aprendizados e decisões importantes
+### Opção 1: Apenas Tags (Padrão)
+As notas ficam na **inbox** do Inkdrop, organizadas por tags:
+- `#claude-preferencia` - Preferências pessoais de código
+- `#claude-journal` - Journals de sessões
+- Nome do projeto (ex: `#carbon-claude-brain`)
+
+**Vantagens:**
+- ✅ Zero configuração
+- ✅ Simples de começar
+
+**Desvantagens:**
+- ❌ Inbox fica poluída com o tempo
+
+### Opção 2: Notebook Específico + Tags (Recomendado)
+As notas são criadas em um **notebook dedicado** + tags:
+
+1. **Criar notebook no Inkdrop:**
+   - No Inkdrop, clique em **+ Add Notebook**
+   - Nome: `Claude Brain` (ou qualquer nome)
+   - Pode ser sub-notebook (ex: `Personal > Claude Brain`)
+
+2. **Configurar o ID do notebook:**
+   ```bash
+   claude
+   /brain-inkdrop-setup  # Lista todos os notebooks e seus IDs
+   ```
+   Copie o ID (ex: `book:abc123`) e adicione ao `.env`:
+   ```bash
+   nano ~/.carbon-brain/.env
+   ```
+   Adicione:
+   ```
+   INKDROP_NOTEBOOK_ID="book:abc123"
+   ```
+
+3. **Resultado:**
+   - Todas as notas vão para `Claude Brain/`
+   - Ainda mantém as tags (`#claude-journal`, `#claude-preferencia`)
+   - Inbox limpa!
+
+**Vantagens:**
+- ✅ Organização hierárquica
+- ✅ Inbox limpa
+- ✅ Pode ter sub-notebooks por projeto
+- ✅ Combina com tags para busca
+
+### Tags Geradas Automaticamente
+Independente da opção escolhida, as seguintes tags são sempre adicionadas:
+- `#claude-preferencia` - Notas de preferências pessoais
+- `#claude-journal` - Journals de sessões
+- `#nome-do-projeto` - Nome do projeto (ex: `#carbon-claude-brain`)
 
 ## Troubleshooting
 
@@ -72,7 +143,7 @@ Crie as seguintes tags para organizar melhor:
 ### Erro de autenticação
 ```bash
 # Verifique se as credenciais estão corretas
-curl -v -u SEU_USUARIO:SUA_SENHA http://localhost:19840/
+curl -v -u "$INKDROP_USER:$INKDROP_PASS" http://localhost:19840/
 ```
 
 Se retornar `401 Unauthorized`:
@@ -89,11 +160,11 @@ No Inkdrop:
 ### Testar conexão completa
 ```bash
 # Listar notebooks
-curl -u USUARIO:SENHA http://localhost:19840/books
+curl -u "$INKDROP_USER:$INKDROP_PASS" http://localhost:19840/books
 
 # Criar uma nota de teste
 curl -X POST \
-  -u USUARIO:SENHA \
+  -u "$INKDROP_USER:$INKDROP_PASS" \
   -H "Content-Type: application/json" \
   -d '{"title":"Test","body":"Testing API"}' \
   http://localhost:19840/notes

@@ -103,6 +103,7 @@ cd carbon-claude-brain
 The script will ask for:
 - Path to your Obsidian vault
 - Credentials for Inkdrop local server
+- (Optional) Inkdrop Notebook ID where notes should be created
 
 ### ⚠️ Security Note
 
@@ -135,6 +136,7 @@ Inkdrop credentials are stored at `~/.carbon-brain/.env` (standard `.env` format
 - Session journals
 - General learnings and patterns
 - Resolved errors
+- **Notebook organization:** Notes can be created in a specific notebook (optional)
 
 ## 🤖 Auto-Save (NEW!)
 

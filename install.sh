@@ -73,9 +73,17 @@ if [ -n "$INKDROP_URL" ]; then
   read -rp "👤 Usuário do Inkdrop local: " INKDROP_USER
   read -rsp "🔑 Senha do Inkdrop local: " INKDROP_PASS
   echo ""
+  echo ""
+  echo "📓 Notebook do Inkdrop (opcional):"
+  echo "   Você pode criar as notas em um notebook específico."
+  echo "   Use /brain-inkdrop-setup depois para descobrir o ID do notebook."
+  echo ""
+  read -rp "📓 ID do Notebook [deixe vazio para usar inbox]: " INKDROP_NOTEBOOK_ID
+  INKDROP_NOTEBOOK_ID="${INKDROP_NOTEBOOK_ID:-}"
 else
   INKDROP_USER=""
   INKDROP_PASS=""
+  INKDROP_NOTEBOOK_ID=""
   echo "⚠️  Inkdrop desabilitado. Apenas Obsidian será usado."
 fi
 
@@ -94,6 +102,7 @@ mkdir -p "$SKILLS_DIR/brain-plan"
 mkdir -p "$SKILLS_DIR/brain-learn"
 mkdir -p "$SKILLS_DIR/brain-error"
 mkdir -p "$SKILLS_DIR/brain-search-patterns"
+mkdir -p "$SKILLS_DIR/brain-inkdrop-setup"
 
 # ── Salvar configuração ────────────────────────────────────────────────────
 
@@ -108,6 +117,7 @@ OBSIDIAN_VAULT="$OBSIDIAN_VAULT"
 INKDROP_URL="$INKDROP_URL"
 INKDROP_USER="$INKDROP_USER"
 INKDROP_PASS="$INKDROP_PASS"
+INKDROP_NOTEBOOK_ID="$INKDROP_NOTEBOOK_ID"
 EOF
 chmod 600 "$ENV_FILE"
 
@@ -122,6 +132,7 @@ OBSIDIAN_VAULT="$OBSIDIAN_VAULT"
 INKDROP_URL="$INKDROP_URL"
 INKDROP_USER="$INKDROP_USER"
 INKDROP_PASS="$INKDROP_PASS"
+INKDROP_NOTEBOOK_ID="$INKDROP_NOTEBOOK_ID"
 EOF
 chmod 600 "$CONFIG_FILE"
 
@@ -161,8 +172,9 @@ cp "$REPO_DIR/skills/brain-plan/SKILL.md"           "$SKILLS_DIR/brain-plan/SKIL
 cp "$REPO_DIR/skills/brain-learn/SKILL.md"          "$SKILLS_DIR/brain-learn/SKILL.md"
 cp "$REPO_DIR/skills/brain-error/SKILL.md"          "$SKILLS_DIR/brain-error/SKILL.md"
 cp "$REPO_DIR/skills/brain-search-patterns/SKILL.md" "$SKILLS_DIR/brain-search-patterns/SKILL.md"
+cp "$REPO_DIR/skills/brain-inkdrop-setup/SKILL.md" "$SKILLS_DIR/brain-inkdrop-setup/SKILL.md"
 
-echo "✅ Skills instaladas em ~/.claude/skills/ (11 skills total)"
+echo "✅ Skills instaladas em ~/.claude/skills/ (12 skills total)"
 
 # ── Registrar hooks no settings.json ──────────────────────────────────────
 
@@ -223,18 +235,87 @@ const sessionEndHook = {
   }]
 };
 
-// Evitar duplicatas
-const alreadyHasStart = JSON.stringify(settings).includes('carbon-brain-start');
-if (!alreadyHasStart) {
-  settings.hooks.PreToolUse.push(startHook);
-  settings.hooks.Stop.push(endHook);
-  settings.hooks.PostToolUse.push(postHook);
-  settings.hooks.SessionEnd.push(sessionEndHook);
+// Remover hooks antigos do carbon-brain (garante atualização)
+function removeOldCarbonBrainHooks(hooks) {
+  return hooks.filter(h => {
+    const hasCarbon = h.hooks && h.hooks.some(ch =>
+      (ch.command && ch.command.includes('carbon-brain')) ||
+      (ch.prompt && ch.prompt.includes('carbon-claude-brain'))
+    );
+    return !hasCarbon;
+  });
 }
+
+// Limpar hooks antigos
+settings.hooks.PreToolUse = removeOldCarbonBrainHooks(settings.hooks.PreToolUse);
+settings.hooks.PostToolUse = removeOldCarbonBrainHooks(settings.hooks.PostToolUse);
+settings.hooks.Stop = removeOldCarbonBrainHooks(settings.hooks.Stop);
+settings.hooks.SessionEnd = removeOldCarbonBrainHooks(settings.hooks.SessionEnd);
+
+// Adicionar hooks atualizados
+settings.hooks.PreToolUse.push(startHook);
+settings.hooks.Stop.push(endHook);
+settings.hooks.PostToolUse.push(postHook);
+settings.hooks.SessionEnd.push(sessionEndHook);
 
 fs.writeFileSync('$SETTINGS_FILE', JSON.stringify(settings, null, 2));
 console.log('Hooks registrados no settings.json (incluindo auto-save SessionEnd)');
 "
+
+# ── Validar settings.json ──────────────────────────────────────────────
+
+echo ""
+echo "🔍 Validando instalação..."
+
+VALIDATION_RESULT=$(node -e "
+const fs = require('fs');
+try {
+  const settings = JSON.parse(fs.readFileSync('$SETTINGS_FILE', 'utf8'));
+
+  // Verificar se hooks foram registrados
+  if (!settings.hooks) {
+    console.log('ERROR: settings.hooks não existe');
+    process.exit(1);
+  }
+
+  // Verificar SessionEnd hook
+  if (!settings.hooks.SessionEnd || settings.hooks.SessionEnd.length === 0) {
+    console.log('ERROR: SessionEnd hook não foi registrado');
+    process.exit(1);
+  }
+
+  // Verificar se o prompt existe no SessionEnd
+  const sessionEndHook = settings.hooks.SessionEnd[0];
+  if (!sessionEndHook.hooks || sessionEndHook.hooks.length === 0) {
+    console.log('ERROR: SessionEnd hook está vazio');
+    process.exit(1);
+  }
+
+  const agentHook = sessionEndHook.hooks[0];
+  if (agentHook.type === 'agent' && !agentHook.prompt) {
+    console.log('ERROR: SessionEnd agent hook está sem o campo prompt');
+    process.exit(1);
+  }
+
+  console.log('OK');
+  process.exit(0);
+} catch (e) {
+  console.log('ERROR: ' + e.message);
+  process.exit(1);
+}
+" 2>&1)
+
+VALIDATION_EXIT=$?
+
+if [ $VALIDATION_EXIT -ne 0 ]; then
+  echo "❌ AVISO: Problema detectado no settings.json:"
+  echo "   $VALIDATION_RESULT"
+  echo ""
+  echo "   Execute './repair.sh' para corrigir automaticamente"
+  echo ""
+else
+  echo "✅ Validação do settings.json passou"
+fi
 
 # ── Templates do Obsidian ──────────────────────────────────────────────────
 

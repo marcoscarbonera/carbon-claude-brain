@@ -33,6 +33,7 @@ session-start.sh → load context → Claude works → post-tool-use.sh → sess
 
 **Environment variables:**
 - `CARBON_BRAIN_SKIP=1` - Bypass context loading (for quick sessions)
+- `INKDROP_NOTEBOOK_ID` - Notebook ID where notes are created (optional)
 - Config loaded from `~/.carbon-brain/.env` or `~/.carbon-brain/config` (legacy)
 
 ### Skills (User-Invocable Commands)
@@ -44,6 +45,7 @@ Located in `skills/{brain,obsidian,inkdrop}/SKILL.md`:
 - `/brain-save` - Save session summary
 - `/brain-search` - Search across all Obsidian projects
 - `/brain-search-patterns` - Search Inkdrop personal knowledge
+- `/brain-inkdrop-setup` - List Inkdrop notebooks and configure notebook ID
 
 ### Obsidian Structure
 
@@ -66,7 +68,14 @@ $OBSIDIAN_VAULT/
 HTTP API at `localhost:19840` (if enabled):
 - Stores personal preferences with tag `#claude-preferencia`
 - Stores session journals with tag `#claude-journal`
+- Supports organizing notes in specific notebooks (via `INKDROP_NOTEBOOK_ID`)
 - Optional - system works with Obsidian only if not configured
+
+**Notebook Configuration:**
+- Use `/brain-inkdrop-setup` to list available notebooks and get IDs
+- Add `INKDROP_NOTEBOOK_ID="book:xxx"` to `~/.carbon-brain/.env`
+- Notes will be created in that notebook + tags
+- If not configured, notes go to Inkdrop inbox
 
 ## Development Commands
 
