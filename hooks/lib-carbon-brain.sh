@@ -14,7 +14,8 @@ get_config_dir() {
 
 # Carrega configuração de .env (ou config antigo para compatibilidade)
 load_config() {
-  local CONFIG_DIR=$(get_config_dir)
+  local CONFIG_DIR
+  CONFIG_DIR=$(get_config_dir)
   local ENV_FILE="$CONFIG_DIR/.env"
   local OLD_CONFIG="$CONFIG_DIR/config"
 
@@ -41,7 +42,8 @@ load_config() {
 
 # Loga erro
 log_error() {
-  local CONFIG_DIR=$(get_config_dir)
+  local CONFIG_DIR
+  CONFIG_DIR=$(get_config_dir)
   local ERROR_LOG="$CONFIG_DIR/errors.log"
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$ERROR_LOG"
 }
