@@ -1,0 +1,31 @@
+{
+  "name": "carbon-claude-brain",
+  "owner": {
+    "name": "Marcos Carbonera"
+  },
+  "metadata": {
+    "description": "Marketplace para o sistema carbon-claude-brain - memória persistente para Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "carbon-claude-brain",
+      "source": "./",
+      "description": "Sistema de memória persistente para Claude Code usando Obsidian e Inkdrop",
+      "version": "1.0.0",
+      "author": {
+        "name": "Marcos Carbonera"
+      },
+      "keywords": [
+        "memory",
+        "obsidian",
+        "inkdrop",
+        "context",
+        "knowledge",
+        "persistent-memory",
+        "note-taking"
+      ],
+      "category": "knowledge-management"
+    }
+  ]
+}

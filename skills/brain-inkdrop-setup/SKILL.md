@@ -1,3 +1,10 @@
+---
+name: brain-inkdrop-setup
+description: >
+  Ajuda a configurar o Inkdrop descobrindo o ID do notebook.
+  Lista notebooks disponíveis e mostra como configurar o destino das notas.
+---
+
 # brain-inkdrop-setup
 
 **Objetivo:** Ajuda a configurar o Inkdrop descobrindo o ID do notebook onde as notas devem ser criadas.
@@ -6,8 +13,6 @@
 - Durante instalação inicial do carbon-claude-brain
 - Quando quiser mudar o notebook de destino
 - Para descobrir IDs de notebooks existentes
-
----
 
 ## Instruções
 

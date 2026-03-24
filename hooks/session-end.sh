@@ -4,8 +4,13 @@
 
 # ── Carregar biblioteca e configuração ─────────────────────────────────────
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib-carbon-brain.sh"
+# Usar CLAUDE_PLUGIN_ROOT se disponível (modo marketplace), senão fallback para SCRIPT_DIR
+if [ -n "$CLAUDE_PLUGIN_ROOT" ]; then
+  source "$CLAUDE_PLUGIN_ROOT/hooks/lib-carbon-brain.sh"
+else
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  source "$SCRIPT_DIR/lib-carbon-brain.sh"
+fi
 
 # Carregar configuração (.env ou config antigo)
 if ! load_config; then
@@ -18,7 +23,8 @@ NOW=$(date '+%H:%M')
 
 # Criar arquivo de trigger — o Claude vai ler isso via skill
 # e executar o salvamento no Obsidian e Inkdrop
-TRIGGER_FILE="$HOME/.carbon-brain/session-end-trigger.json"
+CONFIG_DIR=$(get_config_dir)
+TRIGGER_FILE="$CONFIG_DIR/session-end-trigger.json"
 
 cat > "$TRIGGER_FILE" <<EOF
 {

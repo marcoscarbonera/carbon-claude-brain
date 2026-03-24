@@ -2,8 +2,13 @@
 # carbon-claude-brain — auto-save-helper.sh
 # Helper executado por hooks agent para salvar resumo da sessão
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib-carbon-brain.sh"
+# Usar CLAUDE_PLUGIN_ROOT se disponível (modo marketplace), senão fallback para SCRIPT_DIR
+if [ -n "$CLAUDE_PLUGIN_ROOT" ]; then
+  source "$CLAUDE_PLUGIN_ROOT/hooks/lib-carbon-brain.sh"
+else
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  source "$SCRIPT_DIR/lib-carbon-brain.sh"
+fi
 
 # Carregar configuração
 if ! load_config; then
