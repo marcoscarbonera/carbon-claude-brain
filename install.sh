@@ -91,18 +91,18 @@ fi
 
 mkdir -p "$HOME/.carbon-brain"
 mkdir -p "$HOOKS_DIR"
-mkdir -p "$SKILLS_DIR/brain"
-mkdir -p "$SKILLS_DIR/obsidian"
-mkdir -p "$SKILLS_DIR/inkdrop"
-mkdir -p "$SKILLS_DIR/brain-test"
-mkdir -p "$SKILLS_DIR/brain-save"
-mkdir -p "$SKILLS_DIR/brain-search"
-mkdir -p "$SKILLS_DIR/brain-context"
-mkdir -p "$SKILLS_DIR/brain-plan"
-mkdir -p "$SKILLS_DIR/brain-learn"
-mkdir -p "$SKILLS_DIR/brain-error"
-mkdir -p "$SKILLS_DIR/brain-search-patterns"
-mkdir -p "$SKILLS_DIR/brain-inkdrop-setup"
+mkdir -p "$SKILLS_DIR/carbon-brain"
+mkdir -p "$SKILLS_DIR/carbon-brain-obsidian"
+mkdir -p "$SKILLS_DIR/carbon-brain-inkdrop"
+mkdir -p "$SKILLS_DIR/carbon-brain-test"
+mkdir -p "$SKILLS_DIR/carbon-brain-save"
+mkdir -p "$SKILLS_DIR/carbon-brain-search"
+mkdir -p "$SKILLS_DIR/carbon-brain-context"
+mkdir -p "$SKILLS_DIR/carbon-brain-plan"
+mkdir -p "$SKILLS_DIR/carbon-brain-learn"
+mkdir -p "$SKILLS_DIR/carbon-brain-error"
+mkdir -p "$SKILLS_DIR/carbon-brain-search-patterns"
+mkdir -p "$SKILLS_DIR/carbon-brain-setup"
 
 # ── Salvar configuração ────────────────────────────────────────────────────
 
@@ -159,20 +159,20 @@ echo "✅ Hooks instalados em ~/.claude/hooks/"
 
 # ── Instalar skills ────────────────────────────────────────────────────────
 
-cp "$REPO_DIR/skills/brain/SKILL.md"    "$SKILLS_DIR/brain/SKILL.md"
-cp "$REPO_DIR/skills/obsidian/SKILL.md" "$SKILLS_DIR/obsidian/SKILL.md"
-cp "$REPO_DIR/skills/inkdrop/SKILL.md"  "$SKILLS_DIR/inkdrop/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain/SKILL.md"    "$SKILLS_DIR/carbon-brain/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-obsidian/SKILL.md" "$SKILLS_DIR/carbon-brain-obsidian/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-inkdrop/SKILL.md"  "$SKILLS_DIR/carbon-brain-inkdrop/SKILL.md"
 
 # Copiar sub-skills individuais
-cp "$REPO_DIR/skills/brain-test/SKILL.md"           "$SKILLS_DIR/brain-test/SKILL.md"
-cp "$REPO_DIR/skills/brain-save/SKILL.md"           "$SKILLS_DIR/brain-save/SKILL.md"
-cp "$REPO_DIR/skills/brain-search/SKILL.md"         "$SKILLS_DIR/brain-search/SKILL.md"
-cp "$REPO_DIR/skills/brain-context/SKILL.md"        "$SKILLS_DIR/brain-context/SKILL.md"
-cp "$REPO_DIR/skills/brain-plan/SKILL.md"           "$SKILLS_DIR/brain-plan/SKILL.md"
-cp "$REPO_DIR/skills/brain-learn/SKILL.md"          "$SKILLS_DIR/brain-learn/SKILL.md"
-cp "$REPO_DIR/skills/brain-error/SKILL.md"          "$SKILLS_DIR/brain-error/SKILL.md"
-cp "$REPO_DIR/skills/brain-search-patterns/SKILL.md" "$SKILLS_DIR/brain-search-patterns/SKILL.md"
-cp "$REPO_DIR/skills/brain-inkdrop-setup/SKILL.md" "$SKILLS_DIR/brain-inkdrop-setup/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-test/SKILL.md"           "$SKILLS_DIR/carbon-brain-test/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-save/SKILL.md"           "$SKILLS_DIR/carbon-brain-save/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-search/SKILL.md"         "$SKILLS_DIR/carbon-brain-search/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-context/SKILL.md"        "$SKILLS_DIR/carbon-brain-context/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-plan/SKILL.md"           "$SKILLS_DIR/carbon-brain-plan/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-learn/SKILL.md"          "$SKILLS_DIR/carbon-brain-learn/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-error/SKILL.md"          "$SKILLS_DIR/carbon-brain-error/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-search-patterns/SKILL.md" "$SKILLS_DIR/carbon-brain-search-patterns/SKILL.md"
+cp "$REPO_DIR/skills/carbon-brain-setup/SKILL.md" "$SKILLS_DIR/carbon-brain-setup/SKILL.md"
 
 echo "✅ Skills instaladas em ~/.claude/skills/ (12 skills total)"
 

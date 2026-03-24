@@ -22,10 +22,10 @@ flowchart TB
     Load --> Work[👨‍💻 Sessão de Código]
 
     Work --> Skills{Skills Disponíveis}
-    Skills --> |/brain-plan|PlanSkill[Atualizar Plano]
-    Skills --> |/brain-context|CtxSkill[Ver Contexto]
-    Skills --> |/brain-search|SearchSkill[Buscar Projetos]
-    Skills --> |/brain-search-patterns|PatternSkill[Buscar Padrões]
+    Skills --> |/carbon-brain-plan|PlanSkill[Atualizar Plano]
+    Skills --> |/carbon-brain-context|CtxSkill[Ver Contexto]
+    Skills --> |/carbon-brain-search|SearchSkill[Buscar Projetos]
+    Skills --> |/carbon-brain-search-patterns|PatternSkill[Buscar Padrões]
 
     PlanSkill --> SaveObs[💾 Salvar no Obsidian]
 
@@ -89,12 +89,73 @@ graph LR
 
 - [Claude Code](https://claude.ai/claude-code) instalado
 - [Obsidian](https://obsidian.md) com vault local configurado
-- [Inkdrop](https://www.inkdrop.app) com servidor local ativo (`localhost:19840`)
+- [Inkdrop](https://www.inkdrop.app) com servidor local ativo (`localhost:19840`) — **opcional**
+- `bash` ≥4.0, `curl`, `node` (geralmente já vêm instalados)
 
 ## Instalação
 
+### Opção 1: Marketplace (Recomendado)
+
+Instale diretamente do marketplace de plugins:
+
 ```bash
-git clone https://github.com/marcoscarbonera/carbon-claude-brain
+# Adicionar o marketplace
+/plugin marketplace add marcoscarvalhodearaujo/carbon-claude-brain
+
+# Instalar o plugin
+/plugin install carbon-claude-brain@carbon-claude-brain
+
+# Executar o wizard de configuração
+/carbon-brain-setup
+```
+
+#### Modos de Configuração
+
+**Modo Interativo (Padrão):**
+O wizard fará perguntas passo a passo:
+- ✅ Configuração do caminho do vault do Obsidian
+- ✅ Setup do Inkdrop (opcional)
+- ✅ Criação da estrutura de diretórios
+- ✅ Validação da configuração inicial
+
+**Modo Não-Interativo (Avançado):**
+Para setup automatizado ou configuração reproduzível:
+
+1. Copie o exemplo de configuração:
+   ```bash
+   cp ${CLAUDE_PLUGIN_ROOT}/.env.example ${CLAUDE_PLUGIN_ROOT}/.env
+   ```
+
+2. Edite o `.env` com suas configurações:
+   ```bash
+   # Obrigatório
+   OBSIDIAN_VAULT="/Users/seu-usuario/Documents/MeuVault"
+
+   # Opcional - deixe vazio para desabilitar Inkdrop
+   INKDROP_URL=""
+   INKDROP_USER=""
+   INKDROP_PASS=""
+   ```
+
+3. Execute o setup:
+   ```bash
+   /carbon-brain-setup
+   ```
+
+O script detectará o arquivo `.env` e executará sem prompts.
+
+**Vantagens:**
+- 🚀 Atualizações automáticas
+- 🔧 Instalação com um comando
+- 📦 Sem cópia manual de arquivos
+- ✅ Releases validados
+
+### Opção 2: Instalação Manual
+
+Clone e instale manualmente:
+
+```bash
+git clone https://github.com/marcoscarvalhodearaujo/carbon-claude-brain
 cd carbon-claude-brain
 ./install.sh
 ```
@@ -102,6 +163,12 @@ cd carbon-claude-brain
 O script vai perguntar:
 - Caminho do vault do Obsidian
 - Credenciais do servidor local do Inkdrop
+- (Opcional) ID do Notebook do Inkdrop onde as notas devem ser criadas
+
+**Quando usar:**
+- 🔬 Testar versões de desenvolvimento
+- 🛠️ Modificações customizadas
+- 📝 Contribuir para o projeto
 
 ### ⚠️ Nota sobre Segurança
 
@@ -161,18 +228,22 @@ Resumos de sessão agora são **salvos automaticamente** quando você fecha o Cl
 
 **[→ Documentação do Auto-Save](docs/auto-save.md)**
 
-Você ainda pode usar `/brain-save` manualmente para ter mais controle.
+Você ainda pode usar `/carbon-brain-save` manualmente para ter mais controle.
 
 ## Skills Disponíveis
 
 | Skill | Propósito |
 |-------|-----------|
-| `/brain-test` | Verificar instalação |
-| `/brain-context` | Ver contexto carregado |
-| `/brain-plan` | Criar/atualizar plano do projeto |
-| `/brain-save` | Salvar resumo da sessão (opcional - agora auto-salva) |
-| `/brain-search` | Buscar em todos os projetos |
-| `/brain-search-patterns` | Buscar conhecimento pessoal |
+| `/carbon-brain-setup` | Executar wizard de configuração (setup inicial) |
+| `/carbon-brain-test` | Verificar instalação e diagnósticos |
+| `/carbon-brain-context` | Ver contexto carregado |
+| `/carbon-brain-plan` | Criar/atualizar plano do projeto |
+| `/carbon-brain-save` | Salvar resumo da sessão (opcional - agora auto-salva) |
+| `/carbon-brain-search` | Buscar em todos os projetos |
+| `/carbon-brain-search-patterns` | Buscar conhecimento pessoal |
+| `/carbon-brain-learn` | Salvar aprendizado reutilizável |
+| `/carbon-brain-error` | Documentar erro resolvido |
+| `/carbon-brain-setup` | Listar notebooks do Inkdrop e configurar destino |
 
 **[→ Documentação Completa dos Skills](docs/skills-guide.md)**
 

@@ -50,7 +50,7 @@ Por padrão, as notas são criadas na inbox do Inkdrop. Para organizá-las em um
 2. **Descobrir o ID do notebook:**
    ```bash
    claude
-   /brain-inkdrop-setup
+   /carbon-brain-setup
    ```
 3. **Copiar o ID** (formato: `book:abc123def456`)
 4. **Adicionar ao `.env`:**
@@ -100,7 +100,7 @@ As notas são criadas em um **notebook dedicado** + tags:
 2. **Configurar o ID do notebook:**
    ```bash
    claude
-   /brain-inkdrop-setup  # Lista todos os notebooks e seus IDs
+   /carbon-brain-setup  # Lista todos os notebooks e seus IDs
    ```
    Copie o ID (ex: `book:abc123`) e adicione ao `.env`:
    ```bash

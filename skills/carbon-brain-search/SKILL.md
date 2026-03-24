@@ -1,5 +1,5 @@
 ---
-name: brain-search
+name: carbon-brain-search
 description: >
   Busca cross-project em todos os projetos do Obsidian vault.
   Use para encontrar soluções ou decisões passadas em qualquer projeto.

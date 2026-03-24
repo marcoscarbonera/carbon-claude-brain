@@ -144,7 +144,7 @@ cat ~/.claude/settings.json | grep carbon-brain
 **Every 3-6 months:**
 1. Change Inkdrop local server password
 2. Update `~/.carbon-brain/config` with new credentials
-3. Test that hooks still work: `/brain-test`
+3. Test that hooks still work: `/carbon-brain-test`
 
 ## Incident Response
 

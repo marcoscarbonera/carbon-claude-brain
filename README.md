@@ -22,10 +22,10 @@ flowchart TB
     Load --> Work[👨‍💻 Coding Session]
 
     Work --> Skills{Skills Available}
-    Skills --> |/brain-plan|PlanSkill[Update Plan]
-    Skills --> |/brain-context|CtxSkill[View Context]
-    Skills --> |/brain-search|SearchSkill[Search Projects]
-    Skills --> |/brain-search-patterns|PatternSkill[Search Patterns]
+    Skills --> |/carbon-brain-plan|PlanSkill[Update Plan]
+    Skills --> |/carbon-brain-context|CtxSkill[View Context]
+    Skills --> |/carbon-brain-search|SearchSkill[Search Projects]
+    Skills --> |/carbon-brain-search-patterns|PatternSkill[Search Patterns]
 
     PlanSkill --> SaveObs[💾 Save to Obsidian]
 
@@ -89,13 +89,73 @@ graph LR
 
 - [Claude Code](https://claude.ai/claude-code) installed
 - [Obsidian](https://obsidian.md) with local vault configured
-- [Inkdrop](https://www.inkdrop.app) with local server active (`localhost:19840`)
+- [Inkdrop](https://www.inkdrop.app) with local server active (`localhost:19840`) — **optional**
 - `bash` ≥4.0, `curl`, `node` (usually pre-installed)
 
 ## Installation
 
+### Option 1: Marketplace (Recommended)
+
+Install directly from the plugin marketplace:
+
 ```bash
-git clone https://github.com/marcoscarbonera/carbon-claude-brain
+# Add the marketplace
+/plugin marketplace add marcoscarvalhodearaujo/carbon-claude-brain
+
+# Install the plugin
+/plugin install carbon-claude-brain@carbon-claude-brain
+
+# Run the configuration wizard
+/carbon-brain-setup
+```
+
+#### Configuration Modes
+
+**Interactive Mode (Default):**
+The wizard will ask you questions step by step:
+- ✅ Obsidian vault path configuration
+- ✅ Inkdrop setup (optional)
+- ✅ Directory structure creation
+- ✅ Initial setup validation
+
+**Non-Interactive Mode (Advanced):**
+For automated setup or reproducible configuration:
+
+1. Copy the example config:
+   ```bash
+   cp ${CLAUDE_PLUGIN_ROOT}/.env.example ${CLAUDE_PLUGIN_ROOT}/.env
+   ```
+
+2. Edit `.env` with your settings:
+   ```bash
+   # Required
+   OBSIDIAN_VAULT="/Users/yourname/Documents/MyVault"
+
+   # Optional - leave empty to disable Inkdrop
+   INKDROP_URL=""
+   INKDROP_USER=""
+   INKDROP_PASS=""
+   ```
+
+3. Run setup:
+   ```bash
+   /carbon-brain-setup
+   ```
+
+The script will detect the `.env` file and run without prompts.
+
+**Advantages:**
+- 🚀 Automatic updates
+- 🔧 One-command installation
+- 📦 No manual file copying
+- ✅ Validated releases
+
+### Option 2: Manual Installation
+
+Clone and install manually:
+
+```bash
+git clone https://github.com/marcoscarvalhodearaujo/carbon-claude-brain
 cd carbon-claude-brain
 ./install.sh
 ```
@@ -104,6 +164,11 @@ The script will ask for:
 - Path to your Obsidian vault
 - Credentials for Inkdrop local server
 - (Optional) Inkdrop Notebook ID where notes should be created
+
+**When to use:**
+- 🔬 Testing development versions
+- 🛠️ Custom modifications
+- 📝 Contributing to the project
 
 ### ⚠️ Security Note
 
@@ -164,18 +229,22 @@ Session summaries are now **saved automatically** when you close Claude Code.
 
 **[→ Auto-Save Documentation](docs/auto-save.md)**
 
-You can still use `/brain-save` manually for more control.
+You can still use `/carbon-brain-save` manually for more control.
 
 ## Available Skills
 
 | Skill | Purpose |
 |-------|---------|
-| `/brain-test` | Verify installation |
-| `/brain-context` | View loaded context |
-| `/brain-plan` | Create/update project plan |
-| `/brain-save` | Save session summary (optional - now auto-saves) |
-| `/brain-search` | Search all projects |
-| `/brain-search-patterns` | Search personal knowledge |
+| `/carbon-brain-setup` | Run configuration wizard (first-time setup) |
+| `/carbon-brain-test` | Verify installation and diagnostics |
+| `/carbon-brain-context` | View loaded context |
+| `/carbon-brain-plan` | Create/update project plan |
+| `/carbon-brain-save` | Save session summary (optional - now auto-saves) |
+| `/carbon-brain-search` | Search all projects |
+| `/carbon-brain-search-patterns` | Search personal knowledge |
+| `/carbon-brain-learn` | Save reusable learning |
+| `/carbon-brain-error` | Document solved error |
+| `/carbon-brain-setup` | List Inkdrop notebooks and configure destination |
 
 **[→ Complete Skills Documentation](docs/skills-guide.md)**
 

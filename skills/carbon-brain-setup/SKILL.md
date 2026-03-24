@@ -1,28 +1,72 @@
-# brain-inkdrop-setup
-
-**Objetivo:** Ajuda a configurar o Inkdrop descobrindo o ID do notebook onde as notas devem ser criadas.
-
-**Quando usar:**
-- Durante instalação inicial do carbon-claude-brain
-- Quando quiser mudar o notebook de destino
-- Para descobrir IDs de notebooks existentes
-
+---
+name: carbon-brain-setup
+description: >
+  Wizard de configuração completo do carbon-claude-brain.
+  Use após instalar via marketplace para configurar Obsidian e Inkdrop.
+  Também pode ser usado para reconfigurar ou listar notebooks do Inkdrop.
 ---
 
-## Instruções
+# /carbon-brain-setup — Configuração Completa
 
-Execute os seguintes passos:
+**Objetivo:** Configurar carbon-claude-brain após instalação via marketplace ou reconfigurar instalação existente.
 
-1. **Carregar configuração:**
-   ```bash
-   source ~/.claude/hooks/lib-carbon-brain.sh
-   load_config
-   ```
+**Quando usar:**
+- ✅ **Primeira vez após `/plugin install`** (configuração inicial obrigatória)
+- ✅ Quando quiser reconfigurar Obsidian vault ou Inkdrop
+- ✅ Para descobrir IDs de notebooks do Inkdrop
 
-2. **Verificar se Inkdrop está configurado:**
-   ```bash
-   if ! is_inkdrop_enabled; then
-     echo "❌ Inkdrop não está configurado."
+## Uso Rápido
+
+```bash
+# Executar o wizard de configuração
+bash "$CLAUDE_PLUGIN_ROOT/configure.sh"
+
+# OU, se instalado manualmente (sem marketplace):
+bash ~/.claude/hooks/../install.sh  # Use install.sh para instalação manual completa
+```
+
+## O que o wizard faz
+
+1. **Detecta modo de instalação** (marketplace vs manual)
+2. **Configura Obsidian vault**
+   - Pede caminho do vault ou detecta automaticamente
+   - Cria estrutura de diretórios `_claude-brain/`
+3. **Configura Inkdrop** (opcional)
+   - API URL, usuário e senha
+   - Lista notebooks disponíveis
+   - Configura `INKDROP_NOTEBOOK_ID`
+4. **Salva configuração** no local correto:
+   - Marketplace: `$CLAUDE_PLUGIN_DATA/.env`
+   - Manual: `~/.carbon-brain/.env`
+
+## Modo Não-Interativo
+
+Se você criar um arquivo `.env` na raiz do plugin antes de rodar, o wizard usará essas configurações:
+
+```bash
+# Criar .env (no diretório do plugin para marketplace)
+cat > "$CLAUDE_PLUGIN_ROOT/.env" <<EOF
+OBSIDIAN_VAULT="/Users/seu-nome/Documents/ObsidianVault"
+INKDROP_URL="http://localhost:19840"
+INKDROP_USER="seu_usuario"
+INKDROP_PASS="sua_senha"
+INKDROP_NOTEBOOK_ID=""
+EOF
+
+# Executar wizard (não fará perguntas, usará .env)
+bash "$CLAUDE_PLUGIN_ROOT/configure.sh"
+```
+
+## Apenas Listar Notebooks do Inkdrop
+
+Se você já configurou e só quer ver os notebooks disponíveis:
+
+```bash
+source ~/.claude/hooks/lib-carbon-brain.sh
+load_config
+
+if ! is_inkdrop_enabled; then
+  echo "❌ Inkdrop não está configurado."
      echo "Configure primeiro com: ./install.sh"
      exit 1
    fi

@@ -1,5 +1,5 @@
 ---
-name: brain-plan
+name: carbon-brain-plan
 description: >
   Cria ou atualiza o plano do projeto em project-context.md.
   Use ao iniciar novo projeto ou quando arquitetura mudar.

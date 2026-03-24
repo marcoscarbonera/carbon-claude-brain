@@ -1,14 +1,15 @@
 # ── Configurações locais (contém credenciais) ──────────────────────
-# IMPORTANTE: ~/.carbon-brain/.env contém credenciais
-# Nunca commitar arquivos de configuração locais
+# IMPORTANTE: .env contém credenciais reais
+# Nunca commitar arquivos de configuração locais com credenciais
 .env
-.env.*
-*.env
 .env.local
 .env.production
 config.local
 config
 .carbon-brain/
+
+# Permitir .env.example (template sem credenciais)
+!.env.example
 
 # ── Instalações de teste ──────────────────────────────────────────
 # Diretórios da instalação local (não commitamos ~/.claude/)

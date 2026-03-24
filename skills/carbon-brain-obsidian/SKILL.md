@@ -1,5 +1,5 @@
 ---
-name: obsidian
+name: carbon-brain-obsidian
 description: >
   Skill para interagir com o vault local do Obsidian via filesystem.
   Use para ler e escrever notas de projeto, decisões e arquitetura.

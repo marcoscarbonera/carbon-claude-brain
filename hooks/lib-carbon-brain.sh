@@ -2,10 +2,25 @@
 # carbon-claude-brain — lib-carbon-brain.sh
 # Funções helper compartilhadas entre hooks
 
+# Retorna o diretório de configuração
+# Usa CLAUDE_PLUGIN_DATA se disponível (marketplace), senão ~/.carbon-brain (manual)
+get_config_dir() {
+  if [ -n "$CLAUDE_PLUGIN_DATA" ]; then
+    echo "$CLAUDE_PLUGIN_DATA"
+  else
+    echo "$HOME/.carbon-brain"
+  fi
+}
+
 # Carrega configuração de .env (ou config antigo para compatibilidade)
 load_config() {
-  local ENV_FILE="$HOME/.carbon-brain/.env"
-  local OLD_CONFIG="$HOME/.carbon-brain/config"
+  local CONFIG_DIR
+  CONFIG_DIR=$(get_config_dir)
+  local ENV_FILE="$CONFIG_DIR/.env"
+  local OLD_CONFIG="$CONFIG_DIR/config"
+
+  # Criar diretório se não existir
+  mkdir -p "$CONFIG_DIR" 2>/dev/null
 
   # Preferir .env (novo)
   if [ -f "$ENV_FILE" ]; then
@@ -27,7 +42,9 @@ load_config() {
 
 # Loga erro
 log_error() {
-  local ERROR_LOG="$HOME/.carbon-brain/errors.log"
+  local CONFIG_DIR
+  CONFIG_DIR=$(get_config_dir)
+  local ERROR_LOG="$CONFIG_DIR/errors.log"
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$ERROR_LOG"
 }
 

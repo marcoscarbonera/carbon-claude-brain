@@ -199,8 +199,8 @@ Tags: #claude-preferencia, #commits
 
 Isso permite buscar depois:
 ```bash
-/brain-search-patterns "#javascript"
-/brain-search-patterns "#react"
+/carbon-brain-search-patterns "#javascript"
+/carbon-brain-search-patterns "#react"
 ```
 
 ### Múltiplas Notas vs Nota Única

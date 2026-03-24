@@ -17,7 +17,7 @@
 
 # Testar se está funcionando
 # (dentro do Claude Code, executar)
-/brain-test
+/carbon-brain-test
 ```
 
 ---
@@ -26,76 +26,76 @@
 
 Execute **dentro do Claude Code** (não no terminal):
 
-### `/brain-save`
+### `/carbon-brain-save`
 Salva resumo da sessão atual no Obsidian + Inkdrop
 
 **Uso:**
 ```
-/brain-save
+/carbon-brain-save
 ```
 
 **Quando usar:** Ao final de uma sessão de trabalho
 
 ---
 
-### `/brain-context`
+### `/carbon-brain-context`
 Mostra o contexto carregado do Obsidian para o projeto atual
 
 **Uso:**
 ```
-/brain-context
+/carbon-brain-context
 ```
 
 **Quando usar:** Para verificar que contexto foi carregado
 
 ---
 
-### `/brain-plan`
+### `/carbon-brain-plan`
 Cria ou atualiza o plano do projeto no Obsidian
 
 **Uso:**
 ```
-/brain-plan
+/carbon-brain-plan
 ```
 
 **Quando usar:** No início do projeto ou ao planejar novas features
 
 ---
 
-### `/brain-search`
+### `/carbon-brain-search`
 Busca um termo em **todos os projetos** do Obsidian vault
 
 **Uso:**
 ```bash
-/brain-search "authentication"
-/brain-search "docker compose"
-/brain-search "rate limiting"
+/carbon-brain-search "authentication"
+/carbon-brain-search "docker compose"
+/carbon-brain-search "rate limiting"
 ```
 
 **Quando usar:** Encontrar como você resolveu algo em outro projeto
 
 ---
 
-### `/brain-search-patterns`
+### `/carbon-brain-search-patterns`
 Busca aprendizados gerais e padrões no **Inkdrop**
 
 **Uso:**
 ```bash
-/brain-search-patterns "error handling"
-/brain-search-patterns "#react hooks"
-/brain-search-patterns "typescript"
+/carbon-brain-search-patterns "error handling"
+/carbon-brain-search-patterns "#react hooks"
+/carbon-brain-search-patterns "typescript"
 ```
 
 **Quando usar:** Buscar padrões/preferências pessoais que você documentou
 
 ---
 
-### `/brain-test`
+### `/carbon-brain-test`
 Diagnóstico completo do carbon-claude-brain
 
 **Uso:**
 ```
-/brain-test
+/carbon-brain-test
 ```
 
 **Quando usar:**
@@ -334,7 +334,7 @@ cd /caminho/do/carbon-claude-brain
 
 ```bash
 # Dentro do Claude Code:
-/brain-context
+/carbon-brain-context
 ```
 
 ---
@@ -362,7 +362,7 @@ cd /novo-projeto
 claude
 
 # Criar plano do projeto
-/brain-plan
+/carbon-brain-plan
 
 # Trabalhar...
 ```
@@ -375,7 +375,7 @@ cd /projeto-existente
 claude
 
 # Ver contexto carregado (opcional)
-/brain-context
+/carbon-brain-context
 
 # Trabalhar...
 ```
@@ -384,7 +384,7 @@ claude
 
 ```bash
 # Salvar resumo
-/brain-save
+/carbon-brain-save
 
 # Ou apenas sair (session-end.sh cria trigger)
 exit
@@ -406,10 +406,10 @@ CARBON_BRAIN_SKIP=1 claude
 # Dentro do Claude Code:
 
 # Buscar em projetos específicos
-/brain-search "authentication jwt"
+/carbon-brain-search "authentication jwt"
 
 # Buscar padrões gerais
-/brain-search-patterns "error handling"
+/carbon-brain-search-patterns "error handling"
 ```
 
 ---
@@ -439,7 +439,7 @@ Cmd/Ctrl + K        → Buscar
 - Use `CARBON_BRAIN_SKIP=1` para scripts rápidos
 - Mantenha preferências < 1000 linhas total
 - Use bullet points (não parágrafos)
-- Rode `/brain-test` após instalação
+- Rode `/carbon-brain-test` após instalação
 - Salve decisões importantes imediatamente
 
 ### ❌ Evite
@@ -456,7 +456,7 @@ Cmd/Ctrl + K        → Buscar
 
 ```bash
 # Algo não funciona?
-/brain-test
+/carbon-brain-test
 
 # Ver logs de erro
 cat ~/.carbon-brain/errors.log

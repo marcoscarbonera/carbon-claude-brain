@@ -39,13 +39,13 @@ session-start.sh → load context → Claude works → post-tool-use.sh → sess
 ### Skills (User-Invocable Commands)
 
 Located in `skills/{brain,obsidian,inkdrop}/SKILL.md`:
-- `/brain-test` - Diagnostic tool
-- `/brain-context` - Show loaded context
-- `/brain-plan` - Create/update project plan
-- `/brain-save` - Save session summary
-- `/brain-search` - Search across all Obsidian projects
-- `/brain-search-patterns` - Search Inkdrop personal knowledge
-- `/brain-inkdrop-setup` - List Inkdrop notebooks and configure notebook ID
+- `/carbon-brain-test` - Diagnostic tool
+- `/carbon-brain-context` - Show loaded context
+- `/carbon-brain-plan` - Create/update project plan
+- `/carbon-brain-save` - Save session summary
+- `/carbon-brain-search` - Search across all Obsidian projects
+- `/carbon-brain-search-patterns` - Search Inkdrop personal knowledge
+- `/carbon-brain-setup` - List Inkdrop notebooks and configure notebook ID
 
 ### Obsidian Structure
 
@@ -72,7 +72,7 @@ HTTP API at `localhost:19840` (if enabled):
 - Optional - system works with Obsidian only if not configured
 
 **Notebook Configuration:**
-- Use `/brain-inkdrop-setup` to list available notebooks and get IDs
+- Use `/carbon-brain-setup` to list available notebooks and get IDs
 - Add `INKDROP_NOTEBOOK_ID="book:xxx"` to `~/.carbon-brain/.env`
 - Notes will be created in that notebook + tags
 - If not configured, notes go to Inkdrop inbox
@@ -99,7 +99,7 @@ Installs hooks, skills, and creates template structure. Prompts for:
 
 ```bash
 # Test full system
-/brain-test
+/carbon-brain-test
 
 # Test with skip mode (bypass context loading)
 CARBON_BRAIN_SKIP=1 claude
@@ -240,7 +240,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 1. Create script in `hooks/`
 2. Add to `install.sh` (copy + chmod)
 3. Register in `settings.json` via Node.js injection
-4. Test with `/brain-test`
+4. Test with `/carbon-brain-test`
 
 ### Adding a New Skill
 

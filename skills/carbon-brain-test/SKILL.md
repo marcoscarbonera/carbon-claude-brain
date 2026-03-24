@@ -1,5 +1,5 @@
 ---
-name: brain-test
+name: carbon-brain-test
 description: >
   Executa diagnóstico completo do carbon-claude-brain.
   Verifica hooks, skills, Obsidian vault e Inkdrop API.
