@@ -1,5 +1,5 @@
 ---
-name: brain-search-patterns
+name: carbon-brain-search-patterns
 description: >
   Busca aprendizados gerais e padrões no Inkdrop (conhecimento pessoal).
   Use para encontrar patterns reutilizáveis, não específicos de projeto.

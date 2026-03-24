@@ -4,7 +4,7 @@ Complete reference for all carbon-claude-brain skills.
 
 ## Available Skills
 
-### `/brain-save`
+### `/carbon-brain-save`
 
 **Purpose:** Save the current session summary when ending a session.
 
@@ -20,14 +20,14 @@ Complete reference for all carbon-claude-brain skills.
 
 **Example:**
 ```bash
-/brain-save
+/carbon-brain-save
 ```
 
 Claude will summarize what was done and save it to both Obsidian and Inkdrop.
 
 ---
 
-### `/brain-context`
+### `/carbon-brain-context`
 
 **Purpose:** Show the current context loaded from Obsidian for the project.
 
@@ -44,12 +44,12 @@ Claude will summarize what was done and save it to both Obsidian and Inkdrop.
 
 **Example:**
 ```bash
-/brain-context
+/carbon-brain-context
 ```
 
 ---
 
-### `/brain-plan`
+### `/carbon-brain-plan`
 
 **Purpose:** Create or update the project plan in Obsidian.
 
@@ -67,14 +67,14 @@ Claude will summarize what was done and save it to both Obsidian and Inkdrop.
 
 **Example:**
 ```bash
-/brain-plan
+/carbon-brain-plan
 ```
 
 Claude will guide you through creating or updating the plan.
 
 ---
 
-### `/brain-test`
+### `/carbon-brain-test`
 
 **Purpose:** Verify that carbon-claude-brain is configured correctly.
 
@@ -94,7 +94,7 @@ Claude will guide you through creating or updating the plan.
 
 **Example:**
 ```bash
-/brain-test
+/carbon-brain-test
 ```
 
 **What to expect:**
@@ -110,7 +110,7 @@ carbon-claude-brain is ready to use!
 
 ---
 
-### `/brain-search`
+### `/carbon-brain-search`
 
 **Purpose:** Search for a term across **all projects** in your Obsidian vault.
 
@@ -127,9 +127,9 @@ carbon-claude-brain is ready to use!
 
 **Example:**
 ```bash
-/brain-search "authentication"
-/brain-search "rate limiting"
-/brain-search "database migration"
+/carbon-brain-search "authentication"
+/carbon-brain-search "rate limiting"
+/carbon-brain-search "database migration"
 ```
 
 **Output:**
@@ -145,7 +145,7 @@ Found in project-b:
 
 ---
 
-### `/brain-search-patterns`
+### `/carbon-brain-search-patterns`
 
 **Purpose:** Search general learnings and patterns in **Inkdrop** (not project-specific).
 
@@ -163,9 +163,9 @@ Found in project-b:
 
 **Example:**
 ```bash
-/brain-search-patterns "error handling"
-/brain-search-patterns "#react hooks"
-/brain-search-patterns "typescript generics"
+/carbon-brain-search-patterns "error handling"
+/carbon-brain-search-patterns "#react hooks"
+/carbon-brain-search-patterns "typescript generics"
 ```
 
 **Output:**
@@ -280,42 +280,42 @@ _claude-brain/
 
 **Start of day:**
 ```bash
-/brain-context          # See what you were working on
-/brain-search-patterns "react"  # Review relevant patterns
+/carbon-brain-context          # See what you were working on
+/carbon-brain-search-patterns "react"  # Review relevant patterns
 ```
 
 **During development:**
 ```bash
-/brain-plan            # Update plan as you go
-/brain-search "similar feature"  # Find past solutions
+/carbon-brain-plan            # Update plan as you go
+/carbon-brain-search "similar feature"  # Find past solutions
 ```
 
 **End of day:**
 ```bash
-/brain-save            # Save session summary
+/carbon-brain-save            # Save session summary
 ```
 
 ### Workflow Example
 
 ```bash
 # 1. Start new feature
-/brain-context
+/carbon-brain-context
 # Review: "Working on user authentication"
 
 # 2. Check if you've done this before
-/brain-search "authentication"
+/carbon-brain-search "authentication"
 # Found: "Used JWT in project-x"
 
 # 3. Check your preferences
-/brain-search-patterns "auth"
+/carbon-brain-search-patterns "auth"
 # Found: "Always use bcrypt for passwords"
 
 # 4. Update plan
-/brain-plan
+/carbon-brain-plan
 # Add: "Implement JWT auth with bcrypt"
 
 # 5. End session
-/brain-save
+/carbon-brain-save
 # Saved: "Completed auth setup with JWT"
 ```
 
@@ -325,10 +325,10 @@ _claude-brain/
 
 ### Skill not found
 
-**Problem:** `/brain-search` returns "skill not found"
+**Problem:** `/carbon-brain-search` returns "skill not found"
 
 **Solution:**
-1. Run `/brain-test` to verify installation
+1. Run `/carbon-brain-test` to verify installation
 2. Check `~/.claude/skills/` for skill files
 3. Restart Claude Code
 4. Run `./install.sh` again if needed

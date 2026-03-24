@@ -1,5 +1,5 @@
 ---
-name: brain-learn
+name: carbon-brain-learn
 description: >
   Salva aprendizado reutilizável em global/learnings.md.
   Use quando descobrir regra geral que vale para qualquer projeto.

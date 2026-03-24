@@ -22,10 +22,10 @@ flowchart TB
     Load --> Work[👨‍💻 Coding Session]
 
     Work --> Skills{Skills Available}
-    Skills --> |/brain-plan|PlanSkill[Update Plan]
-    Skills --> |/brain-context|CtxSkill[View Context]
-    Skills --> |/brain-search|SearchSkill[Search Projects]
-    Skills --> |/brain-search-patterns|PatternSkill[Search Patterns]
+    Skills --> |/carbon-brain-plan|PlanSkill[Update Plan]
+    Skills --> |/carbon-brain-context|CtxSkill[View Context]
+    Skills --> |/carbon-brain-search|SearchSkill[Search Projects]
+    Skills --> |/carbon-brain-search-patterns|PatternSkill[Search Patterns]
 
     PlanSkill --> SaveObs[💾 Save to Obsidian]
 
@@ -106,7 +106,7 @@ Install directly from the plugin marketplace:
 /plugin install carbon-claude-brain@carbon-claude-brain
 
 # Run the configuration wizard
-/brain-setup
+/carbon-brain-setup
 ```
 
 #### Configuration Modes
@@ -139,7 +139,7 @@ For automated setup or reproducible configuration:
 
 3. Run setup:
    ```bash
-   /brain-setup
+   /carbon-brain-setup
    ```
 
 The script will detect the `.env` file and run without prompts.
@@ -229,22 +229,22 @@ Session summaries are now **saved automatically** when you close Claude Code.
 
 **[→ Auto-Save Documentation](docs/auto-save.md)**
 
-You can still use `/brain-save` manually for more control.
+You can still use `/carbon-brain-save` manually for more control.
 
 ## Available Skills
 
 | Skill | Purpose |
 |-------|---------|
-| `/brain-setup` | Run configuration wizard (first-time setup) |
-| `/brain-test` | Verify installation and diagnostics |
-| `/brain-context` | View loaded context |
-| `/brain-plan` | Create/update project plan |
-| `/brain-save` | Save session summary (optional - now auto-saves) |
-| `/brain-search` | Search all projects |
-| `/brain-search-patterns` | Search personal knowledge |
-| `/brain-learn` | Save reusable learning |
-| `/brain-error` | Document solved error |
-| `/brain-inkdrop-setup` | List Inkdrop notebooks and configure destination |
+| `/carbon-brain-setup` | Run configuration wizard (first-time setup) |
+| `/carbon-brain-test` | Verify installation and diagnostics |
+| `/carbon-brain-context` | View loaded context |
+| `/carbon-brain-plan` | Create/update project plan |
+| `/carbon-brain-save` | Save session summary (optional - now auto-saves) |
+| `/carbon-brain-search` | Search all projects |
+| `/carbon-brain-search-patterns` | Search personal knowledge |
+| `/carbon-brain-learn` | Save reusable learning |
+| `/carbon-brain-error` | Document solved error |
+| `/carbon-brain-setup` | List Inkdrop notebooks and configure destination |
 
 **[→ Complete Skills Documentation](docs/skills-guide.md)**
 

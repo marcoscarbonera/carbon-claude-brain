@@ -1,5 +1,5 @@
 ---
-name: brain-context
+name: carbon-brain-context
 description: >
   Mostra o contexto atual carregado do Obsidian para o projeto.
   Exibe: project-context.md, decision-log.md e últimas decisões.

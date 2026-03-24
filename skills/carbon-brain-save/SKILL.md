@@ -1,5 +1,5 @@
 ---
-name: brain-save
+name: carbon-brain-save
 description: >
   Salva resumo da sessão atual em Obsidian (journals/) e Inkdrop.
   Use ao encerrar sessão ou quando descobrir algo importante.

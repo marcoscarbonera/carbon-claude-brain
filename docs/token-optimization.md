@@ -286,7 +286,7 @@ TOTAL carregado:                         ~900 tokens ✅
 
 Se suas sessões estão ficando muito caras em tokens:
 
-1. Rode `/brain-test` e veja o que está sendo carregado
+1. Rode `/carbon-brain-test` e veja o que está sendo carregado
 2. Revise suas notas `#claude-preferencia` no Inkdrop
 3. Considere usar `CARBON_BRAIN_SKIP=1` para projetos simples
 4. Leia: [docs/setup-personal-preferences.md](setup-personal-preferences.md)

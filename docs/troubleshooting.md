@@ -144,7 +144,7 @@ sudo yum install curl
 ### 3. Erro ao salvar no Inkdrop
 
 **Sintomas:**
-- Comando `/brain-save` falha
+- Comando `/carbon-brain-save` falha
 - Erro de conexão com localhost:19840
 
 **Causas possíveis:**
@@ -243,7 +243,7 @@ node --version
 
 **Solução temporária:**
 - Evitar rodar múltiplas sessões do Claude Code no mesmo projeto simultaneamente
-- Ou salvar resumo manualmente: `/brain-save` antes de encerrar
+- Ou salvar resumo manualmente: `/carbon-brain-save` antes de encerrar
 
 **Nota:** Fix planejado para versão futura (usar PID único).
 

@@ -1,5 +1,5 @@
 ---
-name: brain-error
+name: carbon-brain-error
 description: >
   Registra erro resolvido em global/errors-solved.md.
   Use quando resolver erro não óbvio para evitar repetição.

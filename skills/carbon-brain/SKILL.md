@@ -1,5 +1,5 @@
 ---
-name: brain
+name: carbon-brain
 description: >
   Skill principal do carbon-claude-brain. Orquestra memória persistente
   usando Obsidian como segundo cérebro do projeto e Inkdrop como journal.

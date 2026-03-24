@@ -76,9 +76,7 @@ echo "✅ Hooks removidos de ~/.claude/hooks/"
 
 echo "🗑️  Removendo skills..."
 
-rm -rf "$SKILLS_DIR/brain"
-rm -rf "$SKILLS_DIR/obsidian"
-rm -rf "$SKILLS_DIR/inkdrop"
+rm -rf "$SKILLS_DIR/carbon-brain"*
 
 echo "✅ Skills removidas de ~/.claude/skills/"
 

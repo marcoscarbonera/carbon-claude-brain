@@ -1,5 +1,5 @@
 ---
-name: inkdrop
+name: carbon-brain-inkdrop
 description: >
   Skill para interagir com o Inkdrop via API HTTP local (porta 19840).
   Use para criar e buscar journals de sessão, aprendizados e notas rápidas.

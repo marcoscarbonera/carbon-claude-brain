@@ -138,7 +138,7 @@ Para desabilitar apenas o auto-save (mantendo outras funcionalidades):
 2. Remova ou comente a seção `hooks.SessionEnd`
 3. Mantenha as outras seções (PreToolUse, PostToolUse, Stop)
 
-Você ainda pode usar `/brain-save` manualmente quando quiser.
+Você ainda pode usar `/carbon-brain-save` manualmente quando quiser.
 
 ## Troubleshooting
 
@@ -174,11 +174,11 @@ O auto-save adiciona ~5-10s ao tempo de fechamento (Haiku analisa e salva).
 
 Se isso incomoda:
 - Use Haiku (mais rápido)
-- Ou desabilite auto-save e use `/brain-save` manualmente
+- Ou desabilite auto-save e use `/carbon-brain-save` manualmente
 
 ## Comparação: Auto vs Manual
 
-| Aspecto | Auto-Save | `/brain-save` Manual |
+| Aspecto | Auto-Save | `/carbon-brain-save` Manual |
 |---------|-----------|----------------------|
 | **Esforço** | Zero | Precisa lembrar |
 | **Velocidade** | +5-10s ao fechar | Instantâneo |

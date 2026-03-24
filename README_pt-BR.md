@@ -22,10 +22,10 @@ flowchart TB
     Load --> Work[👨‍💻 Sessão de Código]
 
     Work --> Skills{Skills Disponíveis}
-    Skills --> |/brain-plan|PlanSkill[Atualizar Plano]
-    Skills --> |/brain-context|CtxSkill[Ver Contexto]
-    Skills --> |/brain-search|SearchSkill[Buscar Projetos]
-    Skills --> |/brain-search-patterns|PatternSkill[Buscar Padrões]
+    Skills --> |/carbon-brain-plan|PlanSkill[Atualizar Plano]
+    Skills --> |/carbon-brain-context|CtxSkill[Ver Contexto]
+    Skills --> |/carbon-brain-search|SearchSkill[Buscar Projetos]
+    Skills --> |/carbon-brain-search-patterns|PatternSkill[Buscar Padrões]
 
     PlanSkill --> SaveObs[💾 Salvar no Obsidian]
 
@@ -106,7 +106,7 @@ Instale diretamente do marketplace de plugins:
 /plugin install carbon-claude-brain@carbon-claude-brain
 
 # Executar o wizard de configuração
-/brain-setup
+/carbon-brain-setup
 ```
 
 #### Modos de Configuração
@@ -139,7 +139,7 @@ Para setup automatizado ou configuração reproduzível:
 
 3. Execute o setup:
    ```bash
-   /brain-setup
+   /carbon-brain-setup
    ```
 
 O script detectará o arquivo `.env` e executará sem prompts.
@@ -228,22 +228,22 @@ Resumos de sessão agora são **salvos automaticamente** quando você fecha o Cl
 
 **[→ Documentação do Auto-Save](docs/auto-save.md)**
 
-Você ainda pode usar `/brain-save` manualmente para ter mais controle.
+Você ainda pode usar `/carbon-brain-save` manualmente para ter mais controle.
 
 ## Skills Disponíveis
 
 | Skill | Propósito |
 |-------|-----------|
-| `/brain-setup` | Executar wizard de configuração (setup inicial) |
-| `/brain-test` | Verificar instalação e diagnósticos |
-| `/brain-context` | Ver contexto carregado |
-| `/brain-plan` | Criar/atualizar plano do projeto |
-| `/brain-save` | Salvar resumo da sessão (opcional - agora auto-salva) |
-| `/brain-search` | Buscar em todos os projetos |
-| `/brain-search-patterns` | Buscar conhecimento pessoal |
-| `/brain-learn` | Salvar aprendizado reutilizável |
-| `/brain-error` | Documentar erro resolvido |
-| `/brain-inkdrop-setup` | Listar notebooks do Inkdrop e configurar destino |
+| `/carbon-brain-setup` | Executar wizard de configuração (setup inicial) |
+| `/carbon-brain-test` | Verificar instalação e diagnósticos |
+| `/carbon-brain-context` | Ver contexto carregado |
+| `/carbon-brain-plan` | Criar/atualizar plano do projeto |
+| `/carbon-brain-save` | Salvar resumo da sessão (opcional - agora auto-salva) |
+| `/carbon-brain-search` | Buscar em todos os projetos |
+| `/carbon-brain-search-patterns` | Buscar conhecimento pessoal |
+| `/carbon-brain-learn` | Salvar aprendizado reutilizável |
+| `/carbon-brain-error` | Documentar erro resolvido |
+| `/carbon-brain-setup` | Listar notebooks do Inkdrop e configurar destino |
 
 **[→ Documentação Completa dos Skills](docs/skills-guide.md)**
 
