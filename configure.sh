@@ -43,6 +43,7 @@ if [ -f "$SOURCE_ENV" ]; then
 
   # Carregar variáveis do .env
   set -a
+  # shellcheck source=/dev/null
   source "$SOURCE_ENV"
   set +a
 fi
