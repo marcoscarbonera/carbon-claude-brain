@@ -265,6 +265,20 @@ fi
 echo "✅ Estrutura criada em: $BRAIN_DIR"
 echo ""
 
+# ── 5. Garantir Permissões de Execução nos Hooks ────────────────────────────
+
+echo "Configurando permissões dos hooks..."
+
+HOOKS_DIR="$SCRIPT_DIR/hooks"
+if [ -d "$HOOKS_DIR" ]; then
+  chmod +x "$HOOKS_DIR"/*.sh 2>/dev/null || true
+  echo "✅ Permissões configuradas"
+else
+  echo "⚠️  Diretório de hooks não encontrado (esperado em desenvolvimento)"
+fi
+
+echo ""
+
 # ── Finalização ─────────────────────────────────────────────────────────────
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
