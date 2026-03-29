@@ -159,7 +159,8 @@ echo "✅ Hooks instalados em ~/.claude/hooks/"
 
 # ── Instalar skills ────────────────────────────────────────────────────────
 
-cp "$REPO_DIR/skills/carbon-brain/SKILL.md"    "$SKILLS_DIR/carbon-brain/SKILL.md"
+# Copiar carbon-brain com estrutura completa (examples/, reference/)
+cp -r "$REPO_DIR/skills/carbon-brain/"* "$SKILLS_DIR/carbon-brain/"
 cp "$REPO_DIR/skills/carbon-brain-obsidian/SKILL.md" "$SKILLS_DIR/carbon-brain-obsidian/SKILL.md"
 cp "$REPO_DIR/skills/carbon-brain-inkdrop/SKILL.md"  "$SKILLS_DIR/carbon-brain-inkdrop/SKILL.md"
 
