@@ -19,10 +19,12 @@ session-start.sh → load context → Claude works → post-tool-use.sh → sess
 ```
 
 **Key files:**
-- `hooks/lib-carbon-brain.sh` - Shared library with helper functions
+- `hooks/lib-carbon-brain.sh` - Shared runtime library (context loading, saving, auto-migration)
 - `hooks/session-start.sh` - Loads context from Obsidian + Inkdrop (including global knowledge)
 - `hooks/session-end.sh` - Saves session summary to both systems
 - `hooks/post-tool-use.sh` - Captures important decisions during session
+- `lib-setup.sh` - Setup library (vault detection, Inkdrop wizard, pre-flight validation)
+- `install.sh` - Main installation script (uses lib-setup.sh)
 
 **What gets loaded at session start:**
 1. Inkdrop preferences (`#claude-preferencia` tag)
@@ -85,9 +87,19 @@ HTTP API at `localhost:19840` (if enabled):
 ./install.sh
 ```
 
-Installs hooks, skills, and creates template structure. Prompts for:
-- Obsidian vault path
-- Inkdrop credentials (optional)
+**Intelligent installation with auto-detection:**
+- 🔍 Auto-detects Obsidian vaults from `~/Library/Application Support/obsidian/obsidian.json`
+- 📂 Visual vault selection (highlights currently open vaults)
+- 🧪 Interactive Inkdrop wizard (4 steps: detect → credentials → test → notebook)
+- ✅ Pre-flight validation (vault writable, disk space, Claude Code setup)
+- 🔄 Upgrade detection (preserves config, auto-migrates legacy `config` → `.env`)
+
+**Simplified prompts:** Usually 1-2 questions instead of 4 manual entries.
+
+**Dry-run mode** (test without changes):
+```bash
+./install.sh --dry-run
+```
 
 ### Uninstallation
 
@@ -116,10 +128,12 @@ Markdown linting via `.markdownlint.json` (enforced in CI):
 
 ### Helper Functions (lib-carbon-brain.sh)
 
-**load_config()** - Load environment from `.env` or legacy `config`
+**load_config()** - Load environment from `.env` or legacy `config` (with auto-migration)
 ```bash
 source ~/.claude/hooks/lib-carbon-brain.sh
 load_config  # Exports OBSIDIAN_VAULT, INKDROP_URL, etc.
+# Auto-migrates legacy 'config' → '.env' if needed
+# Shows deprecation warning if legacy format detected
 ```
 
 **save_to_obsidian_journal()** - Save session to daily journal
@@ -142,6 +156,41 @@ save_learning "Performance" "Always add indexes on JOIN columns"
 **save_error_solved()** - Document error resolution
 ```bash
 save_error_solved "$DATE" "Title" "Context" "Error msg" "Solution" "Prevention"
+```
+
+### Setup Functions (lib-setup.sh)
+
+**detect_obsidian_vaults()** - Auto-detect Obsidian vaults from system
+```bash
+source ./lib-setup.sh
+detect_obsidian_vaults  # Returns: /path/to/vault|OPEN (if open) or /path/to/vault|
+# Parses ~/Library/Application Support/obsidian/obsidian.json
+# Ranks by: open status > timestamp > alphabetical
+# Fallback: find + common paths
+```
+
+**select_obsidian_vault()** - Visual UI for vault selection
+```bash
+select_obsidian_vault  # Interactive menu with numbered options
+# Auto-selects if only 1 vault found (with confirmation)
+# Exports OBSIDIAN_VAULT variable
+```
+
+**setup_inkdrop_wizard()** - Interactive 4-step Inkdrop setup
+```bash
+setup_inkdrop_wizard
+# Step 1: Detect if Inkdrop running (localhost:19840)
+# Step 2: Get credentials
+# Step 3: Test connection (3 retries)
+# Step 4: List/select notebook
+# Exports INKDROP_URL, INKDROP_USER, INKDROP_PASS, INKDROP_NOTEBOOK_ID
+```
+
+**validate_configuration()** - Pre-flight checks before installation
+```bash
+validate_configuration "$OBSIDIAN_VAULT" "$INKDROP_URL" "$INKDROP_USER" "$INKDROP_PASS"
+# Checks: vault exists + writable, disk space >1MB, ~/.claude writable,
+#         settings.json valid JSON, Inkdrop connection (if configured)
 ```
 
 ### Error Handling Pattern

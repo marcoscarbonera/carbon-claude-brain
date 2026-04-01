@@ -1,68 +1,79 @@
 {
   "name": "carbon-claude-brain",
   "version": "1.0.0",
-  "description": "Sistema de memória persistente para Claude Code usando Obsidian e Inkdrop",
-  "author": {
-    "name": "Marcos Carbonera"
-  },
-  "homepage": "https://github.com/marcoscarvalhodearaujo/carbon-claude-brain",
-  "repository": "https://github.com/marcoscarvalhodearaujo/carbon-claude-brain",
+  "description": "Persistent memory system for Claude Code using Obsidian vault for project knowledge and Inkdrop for personal journals. Automatically loads context at session start and saves learnings at session end.",
+  "author": "carbon",
+  "repository": "https://github.com/carbon/carbon-claude-brain",
+  "homepage": "https://github.com/carbon/carbon-claude-brain#readme",
   "license": "MIT",
   "keywords": [
     "memory",
     "obsidian",
     "inkdrop",
+    "knowledge-management",
     "context",
-    "knowledge",
     "persistent-memory",
-    "note-taking"
+    "second-brain",
+    "project-knowledge",
+    "session-journal",
+    "learning"
+  ],
+  "skills": [
+    "carbon-brain",
+    "carbon-brain-context",
+    "carbon-brain-error",
+    "carbon-brain-inkdrop",
+    "carbon-brain-learn",
+    "carbon-brain-obsidian",
+    "carbon-brain-plan",
+    "carbon-brain-save",
+    "carbon-brain-search",
+    "carbon-brain-search-patterns",
+    "carbon-brain-setup",
+    "carbon-brain-test"
   ],
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use.sh"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-end.sh"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "agent",
-            "prompt": "You are about to auto-save the session summary for carbon-claude-brain.\n\nINSTRUCTIONS:\n1. Read the session transcript file provided in the hook input (transcript_path)\n2. Analyze the conversation and generate a concise session summary with:\n   - **O que foi feito**: What was accomplished (bullet points)\n   - **Erros e aprendizados**: Errors encountered and learnings (if any)\n   - **Próximos passos**: Next steps or open items (checkbox list)\n\n3. Save the summary by:\n   a. Writing the markdown summary to a temp file: /tmp/brain-summary-${Date.now()}.md\n   b. Running: bash ~/.claude/hooks/auto-save-helper.sh PROJECT_NAME DATE START_TIME END_TIME /tmp/brain-summary-file.md\n\nIMPORTANT:\n- Keep summary concise (max 300 words)\n- Use markdown format\n- Be objective and factual\n- If the session was very short (< 3 interactions), save a minimal summary\n- Use Portuguese (pt-BR) for the summary content\n- Extract project name from current working directory\n- Use current date/time for DATE and END_TIME\n- Get START_TIME from session start (estimate from transcript timestamps)\n\nDO NOT ask for confirmation - save automatically.",
-            "model": "claude-haiku-4",
-            "timeout": 60000
-          }
-        ]
-      }
-    ]
-  }
+    "PreToolUse": ["session-start.sh"],
+    "PostToolUse": ["post-tool-use.sh"],
+    "Stop": ["session-end.sh"],
+    "SessionEnd": ["auto-save-helper.sh"]
+  },
+  "dependencies": {
+    "bash": ">=4.0",
+    "curl": "*",
+    "node": ">=14.0"
+  },
+  "config": {
+    "obsidian_vault": {
+      "type": "string",
+      "description": "Path to your Obsidian vault (required)",
+      "required": true
+    },
+    "inkdrop_url": {
+      "type": "string",
+      "description": "Inkdrop local API URL (optional, e.g., http://localhost:19840)",
+      "required": false,
+      "default": ""
+    },
+    "inkdrop_user": {
+      "type": "string",
+      "description": "Inkdrop local API username (optional)",
+      "required": false,
+      "default": ""
+    },
+    "inkdrop_pass": {
+      "type": "string",
+      "description": "Inkdrop local API password (optional)",
+      "required": false,
+      "default": "",
+      "secret": true
+    },
+    "inkdrop_notebook_id": {
+      "type": "string",
+      "description": "Inkdrop notebook ID for organizing notes (optional, use /carbon-brain-setup to find)",
+      "required": false,
+      "default": ""
+    }
+  },
+  "readme": "README.md"
 }

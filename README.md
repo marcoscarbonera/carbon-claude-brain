@@ -112,11 +112,14 @@ Install directly from the plugin marketplace:
 #### Configuration Modes
 
 **Interactive Mode (Default):**
-The wizard will ask you questions step by step:
-- ✅ Obsidian vault path configuration
-- ✅ Inkdrop setup (optional)
-- ✅ Directory structure creation
-- ✅ Initial setup validation
+The wizard uses intelligent auto-detection and simplified prompts:
+- 🔍 **Auto-detects Obsidian vaults** - Parses `obsidian.json` to find your vaults
+- 📂 **Visual vault selection** - Shows open vaults highlighted, or manual entry
+- 🧪 **Interactive Inkdrop wizard** - Optional 4-step setup with connection testing
+- ✅ **Pre-flight validation** - Checks vault access, disk space, and configuration
+- 📦 **One-click upgrades** - Preserves existing config, auto-migrates legacy format
+
+**Reduced complexity: 4 manual prompts → 1-2 prompts**
 
 **Non-Interactive Mode (Advanced):**
 For automated setup or reproducible configuration:
@@ -160,10 +163,19 @@ cd carbon-claude-brain
 ./install.sh
 ```
 
-The script will ask for:
-- Path to your Obsidian vault
-- Credentials for Inkdrop local server
-- (Optional) Inkdrop Notebook ID where notes should be created
+**What it does:**
+- 🔍 **Auto-detects Obsidian vaults** from your system
+- 📂 **Shows visual selection** with currently open vaults highlighted
+- 🧪 **Optional Inkdrop wizard** with 4-step setup (connection test, credentials, notebook selection)
+- ✅ **Validates before installing** (vault access, disk space, Claude Code setup)
+- 🔄 **Smart upgrades** - Detects existing installation, preserves config, auto-migrates legacy format
+
+**Simplified prompts:** Usually 1-2 questions instead of 4 manual entries.
+
+**Dry-run mode** (test without changes):
+```bash
+./install.sh --dry-run
+```
 
 **When to use:**
 - 🔬 Testing development versions
@@ -289,6 +301,82 @@ CARBON_BRAIN_SKIP=1 claude
 
 ### 🔍 Comparisons & Decisions
 - [vs claude-mem](docs/comparison.md) - Which one to use?
+
+---
+
+## Plugin Structure (For Developers)
+
+This project is structured as a Claude Code marketplace plugin with optimized token usage:
+
+```
+carbon-claude-brain/
+├── .claude-plugin/
+│   └── plugin.json              # Marketplace manifest (metadata only)
+├── skills/
+│   ├── carbon-brain/            # Main skill (optimized: 525 words, ~700 tokens)
+│   │   ├── SKILL.md            # Concise overview with quick reference
+│   │   ├── examples/           # Executable bash scripts
+│   │   │   ├── brain-save-example.sh
+│   │   │   ├── brain-learn-example.sh
+│   │   │   ├── brain-error-example.sh
+│   │   │   ├── brain-search-example.sh
+│   │   │   ├── brain-search-patterns-example.sh
+│   │   │   └── brain-test-example.sh
+│   │   └── reference/          # Detailed documentation
+│   │       └── commands-reference.md
+│   ├── carbon-brain-context/   # Individual skill: show loaded context
+│   ├── carbon-brain-error/     # Individual skill: document errors
+│   ├── carbon-brain-learn/     # Individual skill: save learnings
+│   ├── carbon-brain-plan/      # Individual skill: project planning
+│   ├── carbon-brain-save/      # Individual skill: save session
+│   ├── carbon-brain-search/    # Individual skill: search projects
+│   ├── carbon-brain-search-patterns/ # Individual skill: search patterns
+│   ├── carbon-brain-setup/     # Individual skill: initial setup
+│   └── carbon-brain-test/      # Individual skill: diagnostics
+├── hooks/
+│   ├── lib-carbon-brain.sh     # Shared library with helper functions
+│   ├── session-start.sh        # Loads context at session start
+│   ├── session-end.sh          # Saves summary at session end
+│   ├── post-tool-use.sh        # Captures important decisions
+│   └── auto-save-helper.sh     # Auto-save session summaries
+└── templates/
+    └── obsidian/               # Templates for vault structure
+```
+
+### Token Optimization
+
+The main `carbon-brain` skill was refactored following [superpowers:writing-skills](https://github.com/anthropics/superpowers) guidelines:
+
+- **Before:** ~3500 words (~7000 tokens per session)
+- **After:** 525 words (~700 tokens per session)
+- **Savings:** 90% reduction (6300 tokens saved per session!)
+
+**Key optimizations:**
+- Modular structure with `examples/` and `reference/` subdirectories
+- Markdown relative links (marketplace-compatible)
+- Quick Reference Table for fast scanning
+- Detailed docs moved to separate files
+- Executable examples as standalone scripts
+
+### Publishing to Marketplace
+
+The `plugin.json` manifest includes:
+- 12 user-invocable skills
+- 4 lifecycle hooks (PreToolUse, PostToolUse, Stop, SessionEnd)
+- Configuration schema for setup wizard
+- Dependencies and keywords for discoverability
+
+**Local testing:**
+```bash
+# Test as local plugin before publishing
+claude --plugin-dir ./carbon-claude-brain
+```
+
+**Structure requirements:**
+- ⚠️ **IMPORTANT:** Only `plugin.json` goes inside `.claude-plugin/`
+- All other directories (`skills/`, `hooks/`, `templates/`) must be at plugin root
+- Skills use relative markdown links: `[text](file.md)`
+- Examples are executable with proper shebang: `#!/usr/bin/env bash`
 
 ---
 

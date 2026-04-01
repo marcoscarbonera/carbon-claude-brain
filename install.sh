@@ -1,115 +1,165 @@
 #!/usr/bin/env bash
-# carbon-claude-brain — install.sh
-# Configura hooks e skills no Claude Code
+# carbon-claude-brain — install.sh (Refactored)
+# Intelligent installation with auto-detection
+# Version: 1.0.0
 
 set -e
 
+# Get script directory
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source shared library
+# shellcheck source=lib-setup.sh
+source "$REPO_DIR/lib-setup.sh"
+
+# Constants
 CLAUDE_DIR="$HOME/.claude"
 HOOKS_DIR="$CLAUDE_DIR/hooks"
 SKILLS_DIR="$CLAUDE_DIR/skills"
-CONFIG_FILE="$HOME/.carbon-brain/config"
 
-echo ""
-echo "🧠 carbon-claude-brain — instalação"
-echo "======================================"
-echo ""
-
-# ── Verificar dependências ─────────────────────────────────────────────────
-
-echo "🔍 Verificando dependências..."
-
-# Verificar bash version (precisa ≥4.0)
-BASH_VERSION_MAJOR="${BASH_VERSINFO[0]}"
-if [ "$BASH_VERSION_MAJOR" -lt 4 ]; then
-  echo "❌ Erro: bash versão 4.0 ou superior é necessário"
-  echo "   Versão atual: $BASH_VERSION"
-  exit 1
-fi
-
-# Verificar curl
-if ! command -v curl &> /dev/null; then
-  echo "❌ Erro: curl não está instalado"
-  echo "   Instale com: brew install curl (macOS) ou apt-get install curl (Linux)"
-  exit 1
-fi
-
-# Verificar node (necessário para parsing JSON)
-if ! command -v node &> /dev/null; then
-  echo "❌ Erro: node não está instalado"
-  echo "   Instale com: brew install node (macOS) ou apt-get install nodejs (Linux)"
-  echo "   Nota: node é necessário para manipular o settings.json do Claude Code"
-  exit 1
-fi
-
-# Verificar se Claude Code está instalado
-if [ ! -d "$CLAUDE_DIR" ]; then
-  echo "❌ Erro: Claude Code não parece estar instalado"
-  echo "   Diretório não encontrado: $CLAUDE_DIR"
-  echo "   Instale Claude Code primeiro: https://claude.ai/claude-code"
-  exit 1
-fi
-
-echo "✅ Todas as dependências verificadas"
-echo ""
-
-# ── Coletar configurações ──────────────────────────────────────────────────
-
-read -rp "📁 Caminho do vault do Obsidian (ex: ~/Documents/MyVault): " OBSIDIAN_VAULT
-OBSIDIAN_VAULT="${OBSIDIAN_VAULT/#\~/$HOME}"
-
-if [ ! -d "$OBSIDIAN_VAULT" ]; then
-  echo "❌ Vault não encontrado: $OBSIDIAN_VAULT"
-  exit 1
-fi
-
-echo ""
-echo "Inkdrop é OPCIONAL. Deixe vazio para desabilitar."
-echo ""
-
-read -rp "🔗 URL do servidor Inkdrop [deixe vazio para desabilitar]: " INKDROP_URL
-INKDROP_URL="${INKDROP_URL:-}"
-
-if [ -n "$INKDROP_URL" ]; then
-  read -rp "👤 Usuário do Inkdrop local: " INKDROP_USER
-  read -rsp "🔑 Senha do Inkdrop local: " INKDROP_PASS
-  echo ""
-  echo ""
-  echo "📓 Notebook do Inkdrop (opcional):"
-  echo "   Você pode criar as notas em um notebook específico."
-  echo "   Use /brain-inkdrop-setup depois para descobrir o ID do notebook."
-  echo ""
-  read -rp "📓 ID do Notebook [deixe vazio para usar inbox]: " INKDROP_NOTEBOOK_ID
-  INKDROP_NOTEBOOK_ID="${INKDROP_NOTEBOOK_ID:-}"
+# Detect mode (marketplace vs manual)
+if [ -n "$CLAUDE_PLUGIN_DATA" ]; then
+  MODE="marketplace"
+  CONFIG_DIR="$CLAUDE_PLUGIN_DATA"
 else
-  INKDROP_USER=""
-  INKDROP_PASS=""
-  INKDROP_NOTEBOOK_ID=""
-  echo "⚠️  Inkdrop desabilitado. Apenas Obsidian será usado."
+  MODE="manual"
+  CONFIG_DIR="$HOME/.carbon-brain"
 fi
 
-# ── Criar diretórios ───────────────────────────────────────────────────────
+# Dry-run mode
+DRY_RUN=false
+if [ "$1" = "--dry-run" ]; then
+  DRY_RUN=true
+  echo "🔍 MODO DRY-RUN (simulação, sem alterações)"
+  echo ""
+fi
 
-mkdir -p "$HOME/.carbon-brain"
-mkdir -p "$HOOKS_DIR"
-mkdir -p "$SKILLS_DIR/carbon-brain"
-mkdir -p "$SKILLS_DIR/carbon-brain-obsidian"
-mkdir -p "$SKILLS_DIR/carbon-brain-inkdrop"
-mkdir -p "$SKILLS_DIR/carbon-brain-test"
-mkdir -p "$SKILLS_DIR/carbon-brain-save"
-mkdir -p "$SKILLS_DIR/carbon-brain-search"
-mkdir -p "$SKILLS_DIR/carbon-brain-context"
-mkdir -p "$SKILLS_DIR/carbon-brain-plan"
-mkdir -p "$SKILLS_DIR/carbon-brain-learn"
-mkdir -p "$SKILLS_DIR/carbon-brain-error"
-mkdir -p "$SKILLS_DIR/carbon-brain-search-patterns"
-mkdir -p "$SKILLS_DIR/carbon-brain-setup"
+# Safe execute (respects dry-run)
+safe_execute() {
+  if [ "$DRY_RUN" = true ]; then
+    echo "[DRY-RUN] Simularia: $*"
+  else
+    "$@"
+  fi
+}
 
-# ── Salvar configuração ────────────────────────────────────────────────────
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# MAIN INSTALLATION FLOW
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Criar arquivo .env (padrão universal)
-ENV_FILE="$HOME/.carbon-brain/.env"
+main() {
+  # Header
+  print_header
 
-cat > "$ENV_FILE" <<EOF
+  # Check dependencies
+  check_dependencies || exit 1
+
+  # Detect upgrade vs fresh install
+  local UPGRADE_MODE=false
+  if [ -f "$CONFIG_DIR/.env" ] || [ -f "$CONFIG_DIR/config" ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "🔄 Instalação Existente Detectada"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "Você já tem carbon-claude-brain instalado."
+    echo ""
+    echo "Esta atualização irá:"
+    echo "  • Atualizar hooks e skills para versão mais recente"
+    echo "  • Preservar sua configuração (vault e Inkdrop)"
+    echo "  • Migrar 'config' → '.env' se necessário"
+    echo ""
+
+    read -rp "Continuar com atualização? [S/n]: " UPGRADE
+    if [ "$UPGRADE" = "n" ] || [ "$UPGRADE" = "N" ]; then
+      echo "Instalação cancelada."
+      exit 0
+    fi
+
+    UPGRADE_MODE=true
+  fi
+
+  # Check for non-interactive mode
+  local NON_INTERACTIVE=false
+  if [ -f "$REPO_DIR/.env" ]; then
+    # shellcheck source=/dev/null
+    source "$REPO_DIR/.env"
+    NON_INTERACTIVE=true
+    echo "✓ Modo não-interativo detectado (.env encontrado)"
+    echo ""
+  fi
+
+  # Interactive wizard (if not upgrading and not non-interactive)
+  if [ "$UPGRADE_MODE" = false ] && [ "$NON_INTERACTIVE" = false ]; then
+    # Step 1: Select Obsidian vault
+    select_obsidian_vault || exit 1
+
+    # Step 2: Optionally configure Inkdrop
+    echo ""
+    read -rp "Configurar Inkdrop? [s/N]: " SETUP_INKDROP
+
+    if [ "$SETUP_INKDROP" = "s" ] || [ "$SETUP_INKDROP" = "S" ]; then
+      setup_inkdrop_wizard || {
+        # Wizard failed or user skipped
+        INKDROP_URL=""
+        INKDROP_USER=""
+        INKDROP_PASS=""
+        INKDROP_NOTEBOOK_ID=""
+      }
+    else
+      INKDROP_URL=""
+      INKDROP_USER=""
+      INKDROP_PASS=""
+      INKDROP_NOTEBOOK_ID=""
+      echo "⚠️  Inkdrop desabilitado. Apenas Obsidian será usado."
+    fi
+  elif [ "$UPGRADE_MODE" = true ]; then
+    # Load existing configuration
+    echo "🔄 Carregando configuração existente..."
+
+    if [ -f "$CONFIG_DIR/.env" ]; then
+      # shellcheck source=/dev/null
+      set -a
+      source "$CONFIG_DIR/.env"
+      set +a
+      echo "✓ Configuração carregada de .env"
+    elif [ -f "$CONFIG_DIR/config" ]; then
+      # shellcheck source=/dev/null
+      source "$CONFIG_DIR/config"
+      echo "✓ Configuração carregada de config (será migrada para .env)"
+    fi
+    echo ""
+  fi
+
+  # Pre-flight validation
+  validate_configuration "$OBSIDIAN_VAULT" "$INKDROP_URL" "$INKDROP_USER" "$INKDROP_PASS" || exit 1
+
+  # Backup existing config (if upgrade)
+  if [ "$UPGRADE_MODE" = true ]; then
+    backup_existing_config "$CONFIG_DIR"
+  fi
+
+  # Create directories
+  echo "📁 Criando diretórios..."
+  safe_execute mkdir -p "$CONFIG_DIR"
+  safe_execute mkdir -p "$HOOKS_DIR"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-obsidian"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-inkdrop"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-test"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-save"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-search"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-context"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-plan"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-learn"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-error"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-search-patterns"
+  safe_execute mkdir -p "$SKILLS_DIR/carbon-brain-setup"
+
+  # Save configuration
+  echo "💾 Salvando configuração..."
+
+  if [ "$DRY_RUN" = false ]; then
+    cat > "$CONFIG_DIR/.env" <<EOF
 # carbon-claude-brain configuration
 # DO NOT COMMIT THIS FILE
 
@@ -119,74 +169,126 @@ INKDROP_USER="$INKDROP_USER"
 INKDROP_PASS="$INKDROP_PASS"
 INKDROP_NOTEBOOK_ID="$INKDROP_NOTEBOOK_ID"
 EOF
-chmod 600 "$ENV_FILE"
+    chmod 600 "$CONFIG_DIR/.env"
+    echo "✅ Configuração salva em $CONFIG_DIR/.env"
+  else
+    echo "[DRY-RUN] Criaria $CONFIG_DIR/.env com:"
+    echo "  OBSIDIAN_VAULT=$OBSIDIAN_VAULT"
+    echo "  INKDROP_URL=$INKDROP_URL"
+    echo "  ..."
+  fi
 
-echo "✅ Configuração salva em ~/.carbon-brain/.env"
+  # Install hooks
+  echo ""
+  echo "🔗 Instalando hooks..."
 
-# Criar também config antigo para compatibilidade retroativa
-cat > "$CONFIG_FILE" <<EOF
-# DEPRECATED: Use .env instead
-# This file is kept for backwards compatibility only
+  safe_execute cp "$REPO_DIR/hooks/lib-carbon-brain.sh" "$HOOKS_DIR/lib-carbon-brain.sh"
+  safe_execute chmod +x "$HOOKS_DIR/lib-carbon-brain.sh"
 
-OBSIDIAN_VAULT="$OBSIDIAN_VAULT"
-INKDROP_URL="$INKDROP_URL"
-INKDROP_USER="$INKDROP_USER"
-INKDROP_PASS="$INKDROP_PASS"
-INKDROP_NOTEBOOK_ID="$INKDROP_NOTEBOOK_ID"
+  safe_execute cp "$REPO_DIR/hooks/session-start.sh" "$HOOKS_DIR/carbon-brain-start.sh"
+  safe_execute cp "$REPO_DIR/hooks/session-end.sh" "$HOOKS_DIR/carbon-brain-end.sh"
+  safe_execute cp "$REPO_DIR/hooks/post-tool-use.sh" "$HOOKS_DIR/carbon-brain-post-tool.sh"
+  safe_execute cp "$REPO_DIR/hooks/auto-save-helper.sh" "$HOOKS_DIR/auto-save-helper.sh"
+
+  safe_execute chmod +x "$HOOKS_DIR/carbon-brain-start.sh"
+  safe_execute chmod +x "$HOOKS_DIR/carbon-brain-end.sh"
+  safe_execute chmod +x "$HOOKS_DIR/carbon-brain-post-tool.sh"
+  safe_execute chmod +x "$HOOKS_DIR/auto-save-helper.sh"
+
+  echo "✅ Hooks instalados em ~/.claude/hooks/"
+
+  # Install skills
+  echo ""
+  echo "🧠 Instalando skills..."
+
+  safe_execute cp -r "$REPO_DIR/skills/carbon-brain/"* "$SKILLS_DIR/carbon-brain/"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-obsidian/SKILL.md" "$SKILLS_DIR/carbon-brain-obsidian/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-inkdrop/SKILL.md" "$SKILLS_DIR/carbon-brain-inkdrop/SKILL.md"
+
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-test/SKILL.md" "$SKILLS_DIR/carbon-brain-test/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-save/SKILL.md" "$SKILLS_DIR/carbon-brain-save/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-search/SKILL.md" "$SKILLS_DIR/carbon-brain-search/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-context/SKILL.md" "$SKILLS_DIR/carbon-brain-context/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-plan/SKILL.md" "$SKILLS_DIR/carbon-brain-plan/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-learn/SKILL.md" "$SKILLS_DIR/carbon-brain-learn/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-error/SKILL.md" "$SKILLS_DIR/carbon-brain-error/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-search-patterns/SKILL.md" "$SKILLS_DIR/carbon-brain-search-patterns/SKILL.md"
+  safe_execute cp "$REPO_DIR/skills/carbon-brain-setup/SKILL.md" "$SKILLS_DIR/carbon-brain-setup/SKILL.md"
+
+  echo "✅ Skills instaladas (12 skills total)"
+
+  # Register hooks in settings.json
+  if [ "$MODE" = "manual" ]; then
+    echo ""
+    echo "📝 Registrando hooks no settings.json..."
+
+    if [ "$DRY_RUN" = false ]; then
+      register_hooks_in_settings
+    else
+      echo "[DRY-RUN] Registraria hooks no settings.json"
+    fi
+  fi
+
+  # Create Obsidian templates
+  echo ""
+  echo "📄 Criando templates no Obsidian..."
+
+  BRAIN_FOLDER="$OBSIDIAN_VAULT/_claude-brain"
+  safe_execute mkdir -p "$BRAIN_FOLDER"
+  safe_execute mkdir -p "$BRAIN_FOLDER/global/journals"
+
+  if [ ! -f "$BRAIN_FOLDER/global/learnings.md" ]; then
+    safe_execute cp "$REPO_DIR/templates/obsidian/learnings.md" "$BRAIN_FOLDER/global/"
+    echo "✅ Template learnings.md criado"
+  fi
+
+  if [ ! -f "$BRAIN_FOLDER/global/errors-solved.md" ]; then
+    safe_execute cp "$REPO_DIR/templates/obsidian/errors-solved.md" "$BRAIN_FOLDER/global/"
+    echo "✅ Template errors-solved.md criado"
+  fi
+
+  if [ ! -f "$BRAIN_FOLDER/global/patterns.md" ]; then
+    if [ -f "$REPO_DIR/templates/obsidian/patterns.md" ]; then
+      safe_execute cp "$REPO_DIR/templates/obsidian/patterns.md" "$BRAIN_FOLDER/global/"
+    else
+      if [ "$DRY_RUN" = false ]; then
+        cat > "$BRAIN_FOLDER/global/patterns.md" <<'EOF'
+# Padrões Reutilizáveis
+
+> Padrões de código e arquitetura que funcionam bem.
+> Mantenha conciso com exemplos curtos.
+
+---
+*Atualizado automaticamente via carbon-claude-brain*
 EOF
-chmod 600 "$CONFIG_FILE"
+      fi
+    fi
+    echo "✅ Template patterns.md criado"
+  fi
 
-# ── Instalar hooks ─────────────────────────────────────────────────────────
+  # Success!
+  print_success
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  if [ "$DRY_RUN" = true ]; then
+    echo ""
+    echo "🔍 DRY-RUN COMPLETO - Nenhuma alteração foi feita"
+    echo "   Execute sem --dry-run para instalar de verdade"
+  fi
+}
 
-# Copiar biblioteca compartilhada
-cp "$REPO_DIR/hooks/lib-carbon-brain.sh" "$HOOKS_DIR/lib-carbon-brain.sh"
-chmod +x "$HOOKS_DIR/lib-carbon-brain.sh"
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# HOOK REGISTRATION
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Copiar hooks
-cp "$REPO_DIR/hooks/session-start.sh"    "$HOOKS_DIR/carbon-brain-start.sh"
-cp "$REPO_DIR/hooks/session-end.sh"      "$HOOKS_DIR/carbon-brain-end.sh"
-cp "$REPO_DIR/hooks/post-tool-use.sh"    "$HOOKS_DIR/carbon-brain-post-tool.sh"
-cp "$REPO_DIR/hooks/auto-save-helper.sh" "$HOOKS_DIR/auto-save-helper.sh"
+register_hooks_in_settings() {
+  local SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 
-chmod +x "$HOOKS_DIR/carbon-brain-start.sh"
-chmod +x "$HOOKS_DIR/carbon-brain-end.sh"
-chmod +x "$HOOKS_DIR/carbon-brain-post-tool.sh"
-chmod +x "$HOOKS_DIR/auto-save-helper.sh"
+  if [ ! -f "$SETTINGS_FILE" ]; then
+    echo "{}" > "$SETTINGS_FILE"
+  fi
 
-echo "✅ Hooks instalados em ~/.claude/hooks/"
-
-# ── Instalar skills ────────────────────────────────────────────────────────
-
-# Copiar carbon-brain com estrutura completa (examples/, reference/)
-cp -r "$REPO_DIR/skills/carbon-brain/"* "$SKILLS_DIR/carbon-brain/"
-cp "$REPO_DIR/skills/carbon-brain-obsidian/SKILL.md" "$SKILLS_DIR/carbon-brain-obsidian/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-inkdrop/SKILL.md"  "$SKILLS_DIR/carbon-brain-inkdrop/SKILL.md"
-
-# Copiar sub-skills individuais
-cp "$REPO_DIR/skills/carbon-brain-test/SKILL.md"           "$SKILLS_DIR/carbon-brain-test/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-save/SKILL.md"           "$SKILLS_DIR/carbon-brain-save/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-search/SKILL.md"         "$SKILLS_DIR/carbon-brain-search/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-context/SKILL.md"        "$SKILLS_DIR/carbon-brain-context/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-plan/SKILL.md"           "$SKILLS_DIR/carbon-brain-plan/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-learn/SKILL.md"          "$SKILLS_DIR/carbon-brain-learn/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-error/SKILL.md"          "$SKILLS_DIR/carbon-brain-error/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-search-patterns/SKILL.md" "$SKILLS_DIR/carbon-brain-search-patterns/SKILL.md"
-cp "$REPO_DIR/skills/carbon-brain-setup/SKILL.md" "$SKILLS_DIR/carbon-brain-setup/SKILL.md"
-
-echo "✅ Skills instaladas em ~/.claude/skills/ (12 skills total)"
-
-# ── Registrar hooks no settings.json ──────────────────────────────────────
-
-SETTINGS_FILE="$CLAUDE_DIR/settings.json"
-
-if [ ! -f "$SETTINGS_FILE" ]; then
-  echo "{}" > "$SETTINGS_FILE"
-fi
-
-# Injetar hooks usando node (disponível se Claude Code está instalado)
-node -e "
+  # Use Node.js to modify settings.json
+  node -e "
 const fs = require('fs');
 const settings = JSON.parse(fs.readFileSync('$SETTINGS_FILE', 'utf8'));
 
@@ -200,7 +302,6 @@ const startHook = { matcher: '', hooks: [{ type: 'command', command: '$HOOKS_DIR
 const endHook = { matcher: '', hooks: [{ type: 'command', command: '$HOOKS_DIR/carbon-brain-end.sh' }] };
 const postHook = { matcher: '', hooks: [{ type: 'command', command: '$HOOKS_DIR/carbon-brain-post-tool.sh' }] };
 
-// Hook SessionEnd com agent para auto-save inteligente
 const autoSavePrompt = \`You are about to auto-save the session summary for carbon-claude-brain.
 
 INSTRUCTIONS:
@@ -236,7 +337,7 @@ const sessionEndHook = {
   }]
 };
 
-// Remover hooks antigos do carbon-brain (garante atualização)
+// Remove old carbon-brain hooks
 function removeOldCarbonBrainHooks(hooks) {
   return hooks.filter(h => {
     const hasCarbon = h.hooks && h.hooks.some(ch =>
@@ -247,120 +348,24 @@ function removeOldCarbonBrainHooks(hooks) {
   });
 }
 
-// Limpar hooks antigos
 settings.hooks.PreToolUse = removeOldCarbonBrainHooks(settings.hooks.PreToolUse);
 settings.hooks.PostToolUse = removeOldCarbonBrainHooks(settings.hooks.PostToolUse);
 settings.hooks.Stop = removeOldCarbonBrainHooks(settings.hooks.Stop);
 settings.hooks.SessionEnd = removeOldCarbonBrainHooks(settings.hooks.SessionEnd);
 
-// Adicionar hooks atualizados
+// Add updated hooks
 settings.hooks.PreToolUse.push(startHook);
 settings.hooks.Stop.push(endHook);
 settings.hooks.PostToolUse.push(postHook);
 settings.hooks.SessionEnd.push(sessionEndHook);
 
 fs.writeFileSync('$SETTINGS_FILE', JSON.stringify(settings, null, 2));
-console.log('Hooks registrados no settings.json (incluindo auto-save SessionEnd)');
+console.log('✅ Hooks registrados no settings.json');
 "
-
-# ── Validar settings.json ──────────────────────────────────────────────
-
-echo ""
-echo "🔍 Validando instalação..."
-
-VALIDATION_RESULT=$(node -e "
-const fs = require('fs');
-try {
-  const settings = JSON.parse(fs.readFileSync('$SETTINGS_FILE', 'utf8'));
-
-  // Verificar se hooks foram registrados
-  if (!settings.hooks) {
-    console.log('ERROR: settings.hooks não existe');
-    process.exit(1);
-  }
-
-  // Verificar SessionEnd hook
-  if (!settings.hooks.SessionEnd || settings.hooks.SessionEnd.length === 0) {
-    console.log('ERROR: SessionEnd hook não foi registrado');
-    process.exit(1);
-  }
-
-  // Verificar se o prompt existe no SessionEnd
-  const sessionEndHook = settings.hooks.SessionEnd[0];
-  if (!sessionEndHook.hooks || sessionEndHook.hooks.length === 0) {
-    console.log('ERROR: SessionEnd hook está vazio');
-    process.exit(1);
-  }
-
-  const agentHook = sessionEndHook.hooks[0];
-  if (agentHook.type === 'agent' && !agentHook.prompt) {
-    console.log('ERROR: SessionEnd agent hook está sem o campo prompt');
-    process.exit(1);
-  }
-
-  console.log('OK');
-  process.exit(0);
-} catch (e) {
-  console.log('ERROR: ' + e.message);
-  process.exit(1);
 }
-" 2>&1)
 
-VALIDATION_EXIT=$?
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# EXECUTE
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-if [ $VALIDATION_EXIT -ne 0 ]; then
-  echo "❌ AVISO: Problema detectado no settings.json:"
-  echo "   $VALIDATION_RESULT"
-  echo ""
-  echo "   Execute './repair.sh' para corrigir automaticamente"
-  echo ""
-else
-  echo "✅ Validação do settings.json passou"
-fi
-
-# ── Templates do Obsidian ──────────────────────────────────────────────────
-
-BRAIN_FOLDER="$OBSIDIAN_VAULT/_claude-brain"
-mkdir -p "$BRAIN_FOLDER"
-mkdir -p "$BRAIN_FOLDER/global/journals"
-
-if [ ! -f "$BRAIN_FOLDER/project-context.md" ]; then
-  cp "$REPO_DIR/templates/obsidian/project-context.md" "$BRAIN_FOLDER/"
-  cp "$REPO_DIR/templates/obsidian/decision-log.md"    "$BRAIN_FOLDER/"
-  cp "$REPO_DIR/templates/obsidian/architecture.md"    "$BRAIN_FOLDER/"
-  echo "✅ Templates do Obsidian criados em $BRAIN_FOLDER"
-fi
-
-# Criar templates globais (se não existirem)
-if [ ! -f "$BRAIN_FOLDER/global/learnings.md" ]; then
-  cp "$REPO_DIR/templates/obsidian/learnings.md" "$BRAIN_FOLDER/global/"
-  echo "✅ Template learnings.md criado em $BRAIN_FOLDER/global/"
-fi
-
-if [ ! -f "$BRAIN_FOLDER/global/errors-solved.md" ]; then
-  cp "$REPO_DIR/templates/obsidian/errors-solved.md" "$BRAIN_FOLDER/global/"
-  echo "✅ Template errors-solved.md criado em $BRAIN_FOLDER/global/"
-fi
-
-# Criar patterns.md se não existir
-if [ ! -f "$BRAIN_FOLDER/global/patterns.md" ]; then
-  cp "$REPO_DIR/templates/obsidian/patterns.md" "$BRAIN_FOLDER/global/" 2>/dev/null || cat > "$BRAIN_FOLDER/global/patterns.md" <<'EOF'
-# Padrões Reutilizáveis
-
-> Padrões de código e arquitetura que funcionam bem.
-> Mantenha conciso com exemplos curtos.
-
----
-*Atualizado automaticamente via carbon-claude-brain*
-EOF
-  echo "✅ Template patterns.md criado em $BRAIN_FOLDER/global/"
-fi
-
-echo ""
-echo "🎉 Instalação concluída!"
-echo ""
-echo "   Próximo passo: edite os templates em:"
-echo "   $BRAIN_FOLDER"
-echo ""
-echo "   E reinicie o Claude Code."
-echo ""
+main "$@"

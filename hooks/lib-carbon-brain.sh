@@ -13,6 +13,7 @@ get_config_dir() {
 }
 
 # Carrega configuração de .env (ou config antigo para compatibilidade)
+# Auto-migra config legado → .env quando necessário
 load_config() {
   local CONFIG_DIR
   CONFIG_DIR=$(get_config_dir)
@@ -22,6 +23,24 @@ load_config() {
   # Criar diretório se não existir
   mkdir -p "$CONFIG_DIR" 2>/dev/null
 
+  # Auto-migrate legacy config → .env (if needed)
+  if [ ! -f "$ENV_FILE" ] && [ -f "$OLD_CONFIG" ]; then
+    # Migrar config antigo para .env
+    {
+      echo "# carbon-claude-brain configuration"
+      echo "# Migrated from legacy config file"
+      echo "# DO NOT COMMIT THIS FILE"
+      echo ""
+      cat "$OLD_CONFIG"
+    } > "$ENV_FILE"
+
+    # Ajustar permissões
+    chmod 600 "$ENV_FILE" 2>/dev/null
+
+    # Log da migração
+    log_error "INFO: Migrated legacy config → .env (preserving original)"
+  fi
+
   # Preferir .env (novo)
   if [ -f "$ENV_FILE" ]; then
     # Carregar .env (exportar variáveis)
@@ -29,11 +48,27 @@ load_config() {
     # shellcheck source=/dev/null
     source "$ENV_FILE"
     set +a
+
+    # Se ainda existir config antigo, mostrar warning
+    if [ -f "$OLD_CONFIG" ]; then
+      echo "⚠️  DEPRECATED: Using legacy config file detected" >&2
+      echo "   Your configuration has been migrated to .env" >&2
+      echo "   The old 'config' file can be safely deleted" >&2
+      echo "   Location: $OLD_CONFIG" >&2
+      echo "" >&2
+    fi
+
     return 0
-  # Fallback para config antigo
+  # Fallback para config antigo (se .env não existe)
   elif [ -f "$OLD_CONFIG" ]; then
     # shellcheck source=/dev/null
     source "$OLD_CONFIG"
+
+    # Warning de deprecação
+    echo "⚠️  DEPRECATED: Using legacy config format" >&2
+    echo "   Please run ./install.sh to migrate to .env format" >&2
+    echo "" >&2
+
     return 0
   else
     return 1
