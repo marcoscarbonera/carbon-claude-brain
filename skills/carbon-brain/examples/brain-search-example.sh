@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Busca cross-project no Obsidian
 
+# shellcheck source=/dev/null
 source ~/.carbon-brain/config
 
 SEARCH_TERM="$1"

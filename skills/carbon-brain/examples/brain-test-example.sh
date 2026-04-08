@@ -13,6 +13,7 @@ if [ ! -f "$CONFIG" ]; then
   exit 1
 fi
 
+# shellcheck source=/dev/null
 source "$CONFIG"
 
 # 1. Verificar hooks

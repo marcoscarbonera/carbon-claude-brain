@@ -315,7 +315,7 @@ validate_configuration() {
   # 3. Claude Code writable
   echo -n "Validando Claude Code... "
   if [ ! -w "$HOME/.claude" ]; then
-    ERRORS+=("~/.claude sem permissão de escrita")
+    ERRORS+=("$HOME/.claude sem permissão de escrita")
     echo "❌"
   else
     echo "✓"
@@ -555,13 +555,15 @@ backup_existing_config() {
   local CONFIG_DIR="$1"
 
   if [ -f "$CONFIG_DIR/.env" ]; then
-    local BACKUP_FILE="$CONFIG_DIR/.env.backup.$(date +%Y%m%d-%H%M%S)"
+    local BACKUP_FILE
+    BACKUP_FILE="$CONFIG_DIR/.env.backup.$(date +%Y%m%d-%H%M%S)"
     cp "$CONFIG_DIR/.env" "$BACKUP_FILE"
     echo "✓ Backup criado: $BACKUP_FILE"
   fi
 
   if [ -f "$CONFIG_DIR/config" ]; then
-    local BACKUP_FILE="$CONFIG_DIR/config.backup.$(date +%Y%m%d-%H%M%S)"
+    local BACKUP_FILE
+    BACKUP_FILE="$CONFIG_DIR/config.backup.$(date +%Y%m%d-%H%M%S)"
     cp "$CONFIG_DIR/config" "$BACKUP_FILE"
     echo "✓ Backup criado: $BACKUP_FILE"
   fi

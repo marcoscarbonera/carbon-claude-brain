@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Busca patterns/aprendizados no Inkdrop
 
+# shellcheck source=/dev/null
 source ~/.carbon-brain/config
 
 SEARCH_TERM="$1"

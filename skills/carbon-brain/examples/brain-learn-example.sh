@@ -2,6 +2,7 @@
 # Exemplo de uso do /brain-learn
 # Salva aprendizado reutilizável em global/learnings.md
 
+# shellcheck source=/dev/null
 source ~/.claude/hooks/lib-carbon-brain.sh
 load_config
 

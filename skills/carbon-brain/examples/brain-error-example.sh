@@ -2,6 +2,7 @@
 # Exemplo de uso do /brain-error
 # Documenta erro resolvido em global/errors-solved.md
 
+# shellcheck source=/dev/null
 source ~/.claude/hooks/lib-carbon-brain.sh
 load_config
 

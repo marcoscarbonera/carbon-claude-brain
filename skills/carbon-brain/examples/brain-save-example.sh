@@ -3,6 +3,7 @@
 # Salva resumo da sessão em Obsidian + Inkdrop
 
 # Carregar biblioteca
+# shellcheck source=/dev/null
 source ~/.claude/hooks/lib-carbon-brain.sh
 
 # Carregar configuração (.env ou config antigo)
