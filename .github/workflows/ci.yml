@@ -30,6 +30,12 @@ jobs:
           check_together: 'yes'
           additional_files: 'install.sh'
 
+      - name: Rodar ShellCheck nos testes
+        uses: ludeeus/action-shellcheck@master
+        with:
+          severity: warning
+          scandir: './tests'
+
   security-check:
     name: Verificação de Segurança
     runs-on: ubuntu-latest
@@ -151,10 +157,24 @@ jobs:
           done
           echo "✅ Sintaxe dos hooks está correta"
 
+  bash-tests:
+    name: Bash Test Suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run bash test suite
+        run: bash tests/run_tests.sh
+
   all-checks-passed:
     name: Todos os Checks Passaram
     runs-on: ubuntu-latest
-    needs: [shellcheck, security-check, validate-structure, test-install-dry-run]
+    needs: [shellcheck, security-check, validate-structure, test-install-dry-run, bash-tests]
 
     steps:
       - name: Confirmação

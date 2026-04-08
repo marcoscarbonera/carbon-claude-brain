@@ -121,7 +121,7 @@ if [ "$NON_INTERACTIVE" = true ]; then
         echo "✅ Conexão com Inkdrop estabelecida"
       else
         echo "⚠️  Falha ao conectar com Inkdrop"
-        echo "   Verifique se o plugin local-rest-api está instalado e ativo"
+        echo "   Verifique se o Local Server está habilitado em Inkdrop → Preferences → Local Server"
       fi
     fi
   else
@@ -148,9 +148,8 @@ else
     echo ""
     echo "Para habilitar a API local do Inkdrop:"
     echo "  1. Abra Inkdrop"
-    echo "  2. Preferences → Plugins"
-    echo "  3. Instale: local-rest-api"
-    echo "  4. Configure uma senha local (diferente da senha cloud!)"
+    echo "  2. Preferences → Local Server"
+    echo "  3. Habilite e configure uma senha local (diferente da senha cloud!)"
     echo ""
 
     read -p "URL do Inkdrop [http://localhost:19840]: " INKDROP_URL_INPUT
@@ -178,7 +177,7 @@ else
       fi
     else
       echo "❌ Falha ao conectar com Inkdrop"
-      echo "   Verifique se o plugin local-rest-api está instalado e ativo"
+      echo "   Verifique se o Local Server está habilitado em Inkdrop → Preferences → Local Server"
       echo "   A configuração será salva, mas pode não funcionar"
     fi
   else

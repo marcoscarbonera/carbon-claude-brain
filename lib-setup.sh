@@ -405,10 +405,8 @@ setup_inkdrop_wizard() {
     echo ""
     echo "📖 Para habilitar a API local:"
     echo "   1. Abra Inkdrop"
-    echo "   2. Preferences → Plugins"
-    echo "   3. Busque 'local-rest-api'"
-    echo "   4. Clique Install → Enable"
-    echo "   5. Configure senha local (DIFERENTE da senha cloud!)"
+    echo "   2. Preferences → Local Server"
+    echo "   3. Habilite e configure senha local (DIFERENTE da senha cloud!)"
     echo ""
 
     read -rp "Pular Inkdrop e continuar apenas com Obsidian? [S/n]: " SKIP
