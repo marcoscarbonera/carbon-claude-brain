@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Unit tests for save_to_obsidian_journal(), save_learning(), save_error_solved()
+# shellcheck disable=SC2154  # output/status set by run() in helpers.sh
 LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../hooks/lib-carbon-brain.sh"
 
 setup() {
   setup_temp_vault
   setup_temp_config
   write_minimal_env
+  # shellcheck source=/dev/null
   source "$LIB"
   load_config
 }

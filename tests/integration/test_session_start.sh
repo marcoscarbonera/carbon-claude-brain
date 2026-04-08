@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Integration tests for hooks/session-start.sh
+# shellcheck disable=SC2154  # output/status set by run() in helpers.sh
 HOOK="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../hooks/session-start.sh"
-HOOK_DIR="$(dirname "$HOOK")"
 
 setup() {
   setup_temp_vault
@@ -25,7 +25,6 @@ teardown() {
 }
 
 test_session_start_injects_learnings() {
-  # CLAUDE_PLUGIN_DATA tells the hook where to find the .env
   run bash "$HOOK"
   assert_output "Aprendizado de teste"
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Integration tests for hooks/session-end.sh
+# shellcheck disable=SC2154  # output/status set by run() in helpers.sh
 HOOK="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../hooks/session-end.sh"
 
 setup() {

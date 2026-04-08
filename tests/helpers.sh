@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Shared helpers for all tests — framework functions + setup/teardown utilities
 # Sourced by each test subprocess before running a test function
+# shellcheck disable=SC2034  # output/status used by assert_* in test files
 
 # ── Framework: assert_*, run(), fail() ────────────────────────────────────────
 

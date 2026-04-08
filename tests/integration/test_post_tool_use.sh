@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Integration tests for hooks/post-tool-use.sh
+# shellcheck disable=SC2154  # output/status set by run() in helpers.sh
 HOOK="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../hooks/post-tool-use.sh"
 
 setup() {
@@ -51,11 +52,11 @@ test_post_tool_use_never_blocks_on_invalid_json() {
 }
 
 test_post_tool_use_rotates_log_when_large() {
-  # Generate a large log (>10MB) using dd
+  # Generate a large log (>10MB)
   dd if=/dev/zero bs=1024 count=11000 2>/dev/null | tr '\0' 'x' \
     > "$CARBON_BRAIN_DIR/activity.log"
   run_piped '{"tool_name":"Write","tool_input":{"file_path":"/path/file.sh"}}' bash "$HOOK"
   assert_success
-  line_count="$(wc -l < "$CARBON_BRAIN_DIR/activity.log")"
+  line_count="$(wc -l < "$CARBON_BRAIN_DIR/activity.log" | tr -d ' ')"
   [[ "$line_count" -le 1001 ]] || { fail "log not rotated: $line_count lines remain"; return 1; }
 }
