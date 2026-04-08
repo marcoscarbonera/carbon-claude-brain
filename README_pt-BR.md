@@ -100,7 +100,7 @@ Instale diretamente do marketplace de plugins:
 
 ```bash
 # Adicionar o marketplace
-/plugin marketplace add marcoscarvalhodearaujo/carbon-claude-brain
+/plugin marketplace add marcoscarbonera/carbon-claude-brain
 
 # Instalar o plugin
 /plugin install carbon-claude-brain@carbon-claude-brain
@@ -155,7 +155,7 @@ O script detectará o arquivo `.env` e executará sem prompts.
 Clone e instale manualmente:
 
 ```bash
-git clone https://github.com/marcoscarvalhodearaujo/carbon-claude-brain
+git clone https://github.com/marcoscarbonera/carbon-claude-brain
 cd carbon-claude-brain
 ./install.sh
 ```

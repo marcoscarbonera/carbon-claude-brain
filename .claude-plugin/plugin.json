@@ -2,9 +2,9 @@
   "name": "carbon-claude-brain",
   "version": "1.0.0",
   "description": "Persistent memory system for Claude Code using Obsidian vault for project knowledge and Inkdrop for personal journals. Automatically loads context at session start and saves learnings at session end.",
-  "author": "carbon",
-  "repository": "https://github.com/carbon/carbon-claude-brain",
-  "homepage": "https://github.com/carbon/carbon-claude-brain#readme",
+  "author": "marcoscarbonera",
+  "repository": "https://github.com/marcoscarbonera/carbon-claude-brain",
+  "homepage": "https://github.com/marcoscarbonera/carbon-claude-brain#readme",
   "license": "MIT",
   "keywords": [
     "memory",
