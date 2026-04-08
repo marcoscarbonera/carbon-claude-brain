@@ -2,7 +2,10 @@
   "name": "carbon-claude-brain",
   "version": "1.0.0",
   "description": "Persistent memory system for Claude Code using Obsidian vault for project knowledge and Inkdrop for personal journals. Automatically loads context at session start and saves learnings at session end.",
-  "author": "marcoscarbonera",
+  "author": {
+    "name": "Marcos Carbonera",
+    "url": "https://github.com/marcoscarbonera"
+  },
   "repository": "https://github.com/marcoscarbonera/carbon-claude-brain",
   "homepage": "https://github.com/marcoscarbonera/carbon-claude-brain#readme",
   "license": "MIT",
@@ -18,30 +21,38 @@
     "session-journal",
     "learning"
   ],
-  "skills": [
-    "carbon-brain",
-    "carbon-brain-context",
-    "carbon-brain-error",
-    "carbon-brain-inkdrop",
-    "carbon-brain-learn",
-    "carbon-brain-obsidian",
-    "carbon-brain-plan",
-    "carbon-brain-save",
-    "carbon-brain-search",
-    "carbon-brain-search-patterns",
-    "carbon-brain-setup",
-    "carbon-brain-test"
-  ],
+  "skills": "./skills/",
   "hooks": {
-    "PreToolUse": ["session-start.sh"],
-    "PostToolUse": ["post-tool-use.sh"],
-    "Stop": ["session-end.sh"],
-    "SessionEnd": ["auto-save-helper.sh"]
-  },
-  "dependencies": {
-    "bash": ">=4.0",
-    "curl": "*",
-    "node": ">=14.0"
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/session-end.sh"
+          }
+        ]
+      }
+    ]
   },
   "config": {
     "obsidian_vault": {
