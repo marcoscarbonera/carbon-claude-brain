@@ -49,11 +49,37 @@ TOOL_NAME=$(echo "$INPUT" | node -e "
   }
 " 2>/dev/null)
 
+FILE_PATH=$(echo "$INPUT" | node -e "
+  try {
+    const d = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
+    console.log(d.tool_input && d.tool_input.file_path ? d.tool_input.file_path : '');
+  } catch(e) {
+    console.log('');
+  }
+" 2>/dev/null)
+
 # Registrar apenas ferramentas relevantes
 TRACKED_TOOLS="Write|Edit|MultiEdit|Bash|TodoWrite"
 
 if echo "$TOOL_NAME" | grep -qE "$TRACKED_TOOLS"; then
   echo "$(date '+%Y-%m-%d %H:%M') | $TOOL_NAME | $(pwd | xargs basename)" >> "$LOG_FILE"
+fi
+
+# ── Salvar planos no Obsidian ──────────────────────────────────────────────
+
+PLANS_DIR="$HOME/.claude/plans"
+
+if [[ "$TOOL_NAME" == "Write" || "$TOOL_NAME" == "Edit" ]] && \
+   [[ "$FILE_PATH" == "$PLANS_DIR/"*.md ]]; then
+  if [ -n "$OBSIDIAN_VAULT" ] && [ -d "$OBSIDIAN_VAULT" ]; then
+    PROJECT_NAME="$(basename "$(pwd)")"
+    DEST_DIR="$OBSIDIAN_VAULT/_claude-brain/projects/$PROJECT_NAME/plans"
+    mkdir -p "$DEST_DIR"
+
+    TODAY=$(date '+%Y-%m-%d')
+    PLAN_BASENAME="$(basename "$FILE_PATH")"
+    cp "$FILE_PATH" "$DEST_DIR/${TODAY}-${PLAN_BASENAME}" 2>/dev/null || true
+  fi
 fi
 
 exit 0
